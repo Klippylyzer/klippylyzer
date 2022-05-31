@@ -1,0 +1,21 @@
+{
+  "source": "src/index.html",
+  "scripts": {
+    "start": "parcel",
+    "build": "parcel build"
+  },
+  "dependencies": {
+    "billboard.js": "^3.4.1",
+    "d3": "^7.4.4",
+    "preact": "^10.7.2"
+  },
+  "devDependencies": {
+    "parcel": "2.5.0"
+  },
+  "alias": {
+    "react": "preact/compat",
+    "react-dom/test-utils": "preact/test-utils",
+    "react-dom": "preact/compat",
+    "react/jsx-runtime": "preact/jsx-runtime"
+  }
+}

@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "ES2022",
+        // "isolatedModules": true,
+        "moduleResolution": "node",
+        "jsx": "react-jsx",
+        "jsxImportSource": "preact",
+        "lib": [
+            "webworker",
+            "dom",
+            "esnext"
+        ]
+    }
+}
