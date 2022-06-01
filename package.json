@@ -1,21 +1,88 @@
 {
   "source": "src/index.html",
+  "targets": {
+    "gh-pages": {
+      "publicUrl": "/klippylyzer",
+      "distDir": "gh-pages"
+    }
+  },
   "scripts": {
     "start": "parcel",
-    "build": "parcel build"
+    "build": "parcel build",
+    "lint:js": "eslint src",
+    "lint:ts": "tsc --noEmit --jsx preserve --lib dom,esnext --module esnext --moduleResolution node ./src/main.tsx",
+    "lint:css": "stylelint src/**/*.css src/**/*.scss"
   },
   "dependencies": {
     "billboard.js": "^3.4.1",
     "d3": "^7.4.4",
-    "preact": "^10.7.2"
+    "flowbite": "^1.4.7",
+    "react": "^18.1.0",
+    "react-compound-slider": "^3.3.1",
+    "react-dom": "^18.1.0",
+    "react-helmet": "^6.1.0",
+    "react-icons": "^4.4.0",
+    "ts-classnames": "^0.1.1"
   },
   "devDependencies": {
-    "parcel": "2.5.0"
+    "@parcel/transformer-postcss": "^2.6.0",
+    "@parcel/transformer-sass": "2.5.*",
+    "@types/prop-types": "^15.7.5",
+    "@types/react-dom": "^18.0.5",
+    "@types/react-helmet": "^6.1.5",
+    "@types/tailwindcss": "^3.0.10",
+    "@typescript-eslint/eslint-plugin": "^5.27.0",
+    "@typescript-eslint/parser": "^5.27.0",
+    "autoprefixer": "^10.4.7",
+    "eslint": "^8.16.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "mini-svg-data-uri": "^1.4.4",
+    "parcel": "2.5.*",
+    "postcss": "^8.4.14",
+    "postcss-ts-classnames": "^0.3.0",
+    "prettier": "^2.6.2",
+    "prop-types": "^15.8.1",
+    "stylelint": "^14.8.5",
+    "stylelint-config-prettier-scss": "^0.0.1",
+    "stylelint-config-standard-scss": "^4.0.0",
+    "stylelint-config-tailwindcss": "^0.0.3",
+    "tailwindcss": "^3.0.24",
+    "typescript": "^4.7.2"
   },
-  "alias": {
-    "react": "preact/compat",
-    "react-dom/test-utils": "preact/test-utils",
-    "react-dom": "preact/compat",
-    "react/jsx-runtime": "preact/jsx-runtime"
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ],
+  "postcss": {
+    "plugins": {
+      "tailwindcss": {},
+      "postcss-ts-classnames": {
+        "isModule": true,
+        "exportAsDefault": true
+      }
+    }
+  },
+  "stylelint": {
+    "extends": [
+      "stylelint-config-standard",
+      "stylelint-config-tailwindcss",
+      "stylelint-config-standard-scss",
+      "stylelint-config-prettier-scss"
+    ],
+    "rules": {
+      "scss/at-rule-no-unknown": [
+        true,
+        {
+          "ignoreAtRules": [
+            "tailwind",
+            "apply",
+            "variants",
+            "responsive",
+            "screen"
+          ]
+        }
+      ]
+    }
   }
 }

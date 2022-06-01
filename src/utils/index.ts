@@ -1,4 +1,4 @@
-import { KlippyLog, Stats } from "./types";
+import { KlippyLog, Stats, Temps } from "../types";
 
 function parseKlippyLine(line: string): Stats {
   /*
@@ -19,13 +19,13 @@ function parseKlippyLine(line: string): Stats {
       */
 
   const [, time, ...parts] = line.split(" ");
-  const stats = {
+  const stats: Stats = {
     time: parseFloat(time.slice(0, time.length - 1)),
     values: { klippy: {} },
   };
 
   let section = "klippy";
-  for (let part of parts) {
+  for (const part of parts) {
     if (part.endsWith(":")) {
       section = part.slice(0, part.length - 1);
       stats.values[section] = {};
@@ -40,7 +40,7 @@ function parseKlippyLine(line: string): Stats {
 export function parseKlippyLog(contents: string): KlippyLog {
   // Grab the section of text between the lines "===== Config file =====" and "======================="
   const configSection = contents.slice(
-    contents.lastIndexOf("===== Config file ====="),
+    contents.lastIndexOf("===== Config file =====") + 24,
     contents.lastIndexOf("=======================")
   );
 
@@ -48,10 +48,21 @@ export function parseKlippyLog(contents: string): KlippyLog {
     raw: contents,
     config: configSection,
     stats: contents
-    //   .slice(contents.lastIndexOf("===== Config file ====="))
+      //   .slice(contents.lastIndexOf("===== Config file ====="))
       .split("\n")
       .filter((line) => line.startsWith("Stats "))
       //   .slice(-100)
       .map(parseKlippyLine),
   };
+}
+
+export function statsToTemps(stats: Array<Stats>): Array<Temps> {
+  return stats.map((stat) => ({
+    time: stat.time,
+    ...Object.fromEntries(
+      Object.entries(stat.values)
+        .filter(([, value]) => value.temp !== undefined)
+        .map(([key, value]) => [key, parseFloat(value.temp)])
+    ),
+  }));
 }
