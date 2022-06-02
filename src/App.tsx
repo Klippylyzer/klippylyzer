@@ -8,12 +8,11 @@ import {
 } from "react-icons/bs";
 import cx from "ts-classnames";
 
-import Footer from "./Components/Footer";
+import Button from "./Components/Buttons";
+import ConfigFile from "./Components/ConfigFile";
 import Header from "./Components/Header";
-import MultiRange from "./Components/MultiRange";
 import TempGraph from "./Components/TempGraph";
 import { KlippyLog } from "./types";
-import { debounce } from "./utils/debounce";
 
 enum Tab {
   Config,
@@ -79,42 +78,54 @@ export default function App({ worker }: Props) {
 
       <Header>
         {klippyLog && (
-          <ul className="flex flex-col mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-md md:font-medium">
+          <ul className="flex flex-col mt-4 md:flex-row md:space-x-1 md:mt-0 md:text-md md:font-medium">
             <li>
-              <button
+              <Button
+                btn="Light"
                 onClick={() => setCurrentTab(Tab.Config)}
-                className="flex flex-row items-center"
+                className={cx("flex", "flex-row", "items-center", {
+                  "bg-blue-800 dark:bg-blue-800": currentTab === Tab.Config,
+                })}
               >
                 <BsGear className="mr-2" />
                 Config
-              </button>
+              </Button>
             </li>
             <li>
-              <button
+              <Button
+                btn="Light"
                 onClick={() => setCurrentTab(Tab.TempGraph)}
-                className="flex flex-row items-center"
+                className={cx("flex", "flex-row", "items-center", {
+                  "bg-blue-800 dark:bg-blue-800": currentTab === Tab.TempGraph,
+                })}
               >
                 <BsThermometerHalf className="mr-2" />
                 Temp Graph
-              </button>
+              </Button>
             </li>
             <li>
-              <button
+              <Button
+                btn="Light"
                 onClick={() => setCurrentTab(Tab.Log)}
-                className="flex flex-row items-center"
+                className={cx("flex", "flex-row", "items-center", {
+                  "bg-blue-800 dark:bg-blue-800": currentTab === Tab.Log,
+                })}
               >
                 <BsFileText className="mr-2" />
                 Log
-              </button>
+              </Button>
             </li>
             <li>
-              <button
+              <Button
+                btn="Light"
                 onClick={() => setCurrentTab(Tab.Stats)}
-                className="flex flex-row items-center"
+                className={cx("flex", "flex-row", "items-center", {
+                  "bg-blue-800 dark:bg-blue-800": currentTab === Tab.Stats,
+                })}
               >
                 <BsFillCpuFill className="mr-2" />
                 Stats
-              </button>
+              </Button>
             </li>
           </ul>
         )}
@@ -136,8 +147,8 @@ export default function App({ worker }: Props) {
       {klippyLog && (
         <section className="flex-grow">
           <section className={cx({ hidden: currentTab !== Tab.Config })}>
-            <h3 className={cx("flex", "flex-row", "justify-between")}>
-              <div>Full Printer Config</div>
+            <h2 className={cx("flex", "flex-row", "justify-between")}>
+              <span>Klipper Config</span>
               <button
                 className={cx(
                   "py-2.5",
@@ -168,10 +179,8 @@ export default function App({ worker }: Props) {
               >
                 [download]
               </button>
-            </h3>
-            <code>
-              <pre>{klippyLog.config}</pre>
-            </code>
+            </h2>
+            <ConfigFile klippyLog={klippyLog} />
           </section>
 
           <section className={cx({ hidden: currentTab !== Tab.TempGraph })}>
@@ -195,7 +204,7 @@ export default function App({ worker }: Props) {
         </section>
       )}
 
-      <Footer className="flex-end">
+      {/* <Footer className="flex-end">
         {klippyLog && (
           <MultiRange
             min={0}
@@ -208,7 +217,7 @@ export default function App({ worker }: Props) {
             )}
           />
         )}
-      </Footer>
+      </Footer> */}
     </div>
   );
 }

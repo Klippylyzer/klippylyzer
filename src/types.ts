@@ -1,6 +1,6 @@
 export type Stats = {
   time: number;
-  values: Record<string, Record<string, string>>;
+  values: Record<string, Record<string, number>>;
 };
 
 export type KlippyLog = {

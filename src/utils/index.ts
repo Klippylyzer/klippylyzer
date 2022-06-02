@@ -31,27 +31,29 @@ function parseKlippyLine(line: string): Stats {
       stats.values[section] = {};
     } else {
       const [key, value] = part.split("=", 2);
-      (section ? stats.values[section] : stats.values)[key] = value;
+      (section ? stats.values[section] : stats.values)[key] = parseFloat(value);
     }
   }
 
   return stats;
 }
-export function parseKlippyLog(contents: string): KlippyLog {
-  // Grab the section of text between the lines "===== Config file =====" and "======================="
-  const configSection = contents.slice(
-    contents.lastIndexOf("===== Config file =====") + 24,
-    contents.lastIndexOf("=======================")
-  );
 
+function extractLastConfig(log: string): string {
+  // Grab the section of text between the lines "===== Config file =====" and "======================="
+
+  return log.slice(
+    log.lastIndexOf("===== Config file =====") + 24,
+    log.lastIndexOf("=======================")
+  );
+}
+
+export function parseKlippyLog(raw: string): KlippyLog {
   return {
-    raw: contents,
-    config: configSection,
-    stats: contents
-      //   .slice(contents.lastIndexOf("===== Config file ====="))
+    raw,
+    config: extractLastConfig(raw),
+    stats: raw
       .split("\n")
       .filter((line) => line.startsWith("Stats "))
-      //   .slice(-100)
       .map(parseKlippyLine),
   };
 }
@@ -62,7 +64,7 @@ export function statsToTemps(stats: Array<Stats>): Array<Temps> {
     ...Object.fromEntries(
       Object.entries(stat.values)
         .filter(([, value]) => value.temp !== undefined)
-        .map(([key, value]) => [key, parseFloat(value.temp)])
+        .map(([key, value]) => [key, value.temp])
     ),
   }));
 }

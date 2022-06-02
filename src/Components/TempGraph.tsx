@@ -1,81 +1,121 @@
-import "d3";
-import "billboard.js/dist/billboard.css";
-
-import bb, { line, zoom } from "billboard.js";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { LineChart, LinesChart } from "echarts/charts";
+import {
+  // VisualMapComponent,
+  // VisualMapContinuousComponent,
+  // VisualMapPiecewiseComponent,
+  // AriaComponent,
+  // TransformComponent,
+  DatasetComponent,
+  // LegendScrollComponent,
+  // LegendPlainComponent,
+  DataZoomComponent,
+  DataZoomInsideComponent,
+  DataZoomSliderComponent,
+  // GridSimpleComponent,
+  GridComponent,
+  // TimelineComponent,
+  // MarkPointComponent,
+  // MarkLineComponent,
+  // MarkAreaComponent,
+  LegendComponent,
+  // AxisPointerComponent,
+  // BrushComponent,
+  TitleComponent,
+  // PolarComponent,
+  // RadarComponent,
+  // GeoComponent,
+  // SingleAxisComponent,
+  // ParallelComponent,
+  // CalendarComponent,
+  // GraphicComponent,
+  ToolboxComponent,
+  TooltipComponent,
+} from "echarts/components";
+import * as echarts from "echarts/core";
+import {
+  CanvasRenderer,
+  // SVGRenderer,
+} from "echarts/renderers";
+import ECharts from "echarts-for-react/lib/core";
+import { useEffect, useRef,useState } from "react";
 
 import { Stats } from "../types";
+import { statsToTemps } from "../utils";
 
+echarts.use([
+  LineChart,
+  LinesChart,
+  GridComponent,
+  DatasetComponent,
+  LegendComponent,
+  TooltipComponent,
+  TitleComponent,
+  CanvasRenderer,
+  DataZoomComponent,
+  DataZoomInsideComponent,
+  DataZoomSliderComponent,
+  ToolboxComponent,
+]);
 type Props = { stats: Stats[]; left?: number; right?: number };
 
-export default function TempGraph({ stats, left, right }: Props) {
-  const chartElement = useRef<HTMLDivElement>(null);
-  const [chart, setChart] = useState<bb.Chart>();
+export default function TempGraph({ stats }: Props) {
+  const chart = useRef<ECharts>(null);
+  const [chartData, setChartData] = useState<null | {
+    [key: string]: number[];
+  }>(null);
 
-  const chartData = useMemo<null | {
-    x: "time";
-    rows: [string[], ...number[][]];
-  }>(() => {
-    if (!stats) return null;
+  useEffect(() => {
+    (async function () {
+      const temps = statsToTemps(stats);
+      const keys = Object.keys(temps[0]);
 
-    const keys: string[] = [
-      "time",
-      ...Object.entries(stats[1].values)
-        .filter(([, values]) => values.temp !== undefined)
-        .map(([key]) => key),
-    ];
+      const chartData = Object.fromEntries(
+        keys.map((k) => [k, new Array(temps.length)])
+      );
 
-    const rows: number[][] = stats.slice(1).map((stat) => [
-      stat.time,
-      ...Object.entries(stat.values)
-        .filter(([key]) => keys.includes(key))
-        .map(([, values]) => parseFloat(values.temp)),
-    ]);
+      for (const key of keys) {
+        for (let i = 0; i < temps.length; i++) {
+          chartData[key][i] = temps[i][key];
+        }
+      }
 
-    return { x: "time", rows: [keys, ...rows] };
+      setChartData(chartData);
+    })();
   }, [stats]);
 
-  useEffect(() => {
-    console.log("building chart", chartElement);
-    if (!chartElement.current) return;
-
-    const chart = bb.generate({
-      bindto: chartElement.current,
-      size: { height: Math.min(600, window.innerHeight - 100) },
-      zoom: { enabled: zoom(), type: "drag" },
-      data: {
-        type: line(),
-        rows: [],
-        x: "time",
-      },
-      axis: {
-        x: {
-          // type: "timeseries",
-        },
-      },
-    });
-
-    setChart(chart);
-    return () => chart.destroy();
-  }, [chartElement]);
-
-  useEffect(() => {
-    if (!(chart && chartData != null)) return;
-    console.log("loading chart data");
-
-    chart.load(chartData);
-  }, [chart, chartData]);
-
-  useEffect(() => {
-    if (!(chart && chartData && left && right)) return;
-
-    console.log(
-      chart,
-      chartData.rows[left][0],
-      chartData.rows[right][0],
-      chart.zoom([chartData.rows[left][0], chartData.rows[right][0]])
+  if (chartData) {
+    return (
+      <ECharts
+        ref={chart}
+        echarts={echarts}
+        option={{
+          darkMode: true,
+          textStyle: { color: "rgb(229, 231, 235)" },
+          title: {
+            text: "Temperatures",
+            textStyle: { color: "rgb(229, 231, 235)" },
+          },
+          toolbox: {
+            feature: {
+              dataZoom: { yAxisIndex: "none" },
+              saveAsImage: {},
+            },
+          },
+          tooltip: { trigger: "axis" },
+          dataZoom: [{ type: "slider" }, { type: "inside" }],
+          legend: {
+            textStyle: { color: "rgb(229, 231, 235)" },
+            data: Object.keys(chartData).filter((k) => k !== "time"),
+          },
+          xAxis: { type: "category", data: chartData.time },
+          yAxis: { type: "value" },
+          series: Object.entries(chartData)
+            .filter(([k]) => k !== "time")
+            .map(([k, v]) => ({ name: k, type: "line", data: v })),
+        }}
+      />
     );
-  }, [chart, chartData, left, right]);
+  }
 
-  return <div ref={chartElement} />;
+  return <div>Loading...</div>;
 }

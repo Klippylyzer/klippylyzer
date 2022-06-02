@@ -23,7 +23,7 @@ export default function Header({ children }: React.PropsWithChildren<unknown>) {
           "flex-wrap",
           "justify-between",
           "items-center",
-          "me-auto"
+          "max-w-none"
         )}
       >
         <a href="#" className={cx("flex", "items-center")}>

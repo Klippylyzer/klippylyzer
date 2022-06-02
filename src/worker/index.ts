@@ -6,19 +6,21 @@ import {
 import { parseKlippyLog } from "../utils";
 
 async function parseFiles(files: FileList): Promise<KlippyLog> {
-  const fileContents = await Promise.all(
-    Array.from(files).map(
-      (file) =>
-        new Promise<string>(function (resolve, reject) {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsText(file);
-        })
+  const fileContents = (
+    await Promise.all(
+      Array.from(files).map(
+        (file) =>
+          new Promise<string>(function (resolve, reject) {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsText(file);
+          })
+      )
     )
-  );
+  ).join("\n");
 
-  return parseKlippyLog(fileContents.join("\n"));
+  return parseKlippyLog(fileContents);
 }
 
 async function handleMessage(

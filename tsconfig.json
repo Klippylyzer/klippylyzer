@@ -4,10 +4,11 @@
         "module": "esnext",
         // "isolatedModules": true,
         "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
         "jsx": "preserve",
         "lib": [
             "dom",
             "esnext"
-        ],
+        ]
     }
 }
