@@ -3,10 +3,9 @@
 var colors = require("tailwindcss/colors");
 
 module.exports = {
-  content: [
-    "./src/**/*.{html,js,ts,jsx,tsx}",
-    "./node_modules/flowbite/**/*.js",
-  ],
+  content: ["./src/**/*.{html,js,ts,jsx,tsx}", "./node_modules/daisyui/**/*.js"],
+  // Don't purge classnames in development, so classnames.d.ts is fully generated
+  safelist: process.env.NODE_ENV === "development" ? [{ pattern: /.*/ }] : [],
   theme: {
     extend: {},
     colors: {
@@ -18,6 +17,11 @@ module.exports = {
   },
   darkMode: "media",
   plugins: [
-    require("flowbite/plugin"),
+    require("@tailwindcss/typography"),
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/line-clamp"),
+    require("@tailwindcss/aspect-ratio"),
+    require("daisyui"),
+    // require("flowbite/plugin"),
   ],
 };

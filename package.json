@@ -10,38 +10,57 @@
     "start": "parcel",
     "build": "parcel build",
     "lint:js": "eslint src",
-    "lint:ts": "tsc --noEmit --jsx preserve --lib dom,esnext --module esnext --moduleResolution node ./src/main.tsx",
+    "lint:ts": "tsc --noEmit",
     "lint:css": "stylelint src/**/*.css src/**/*.scss"
   },
+  "pre-commit": [
+    "lint:js",
+    "lint:ts",
+    "lint:css"
+  ],
   "dependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.0",
+    "@tailwindcss/forms": "^0.5.2",
+    "@tailwindcss/line-clamp": "^0.4.0",
+    "@tailwindcss/typography": "^0.5.2",
+    "csstype": "^3.0.10",
+    "daisyui": "^2.15.2",
     "echarts": "^5.3.2",
     "echarts-for-react": "^3.0.2",
+    "echarts-gl": "^2.0.9",
     "flowbite": "^1.4.7",
+    "idb": "^7.0.1",
+    "immer": "^9.0.14",
     "react": "^18.1.0",
     "react-compound-slider": "^3.3.1",
     "react-dom": "^18.1.0",
-    "react-helmet": "^6.1.0",
+    "react-helmet-async": "^1.3.0",
+    "react-hot-toast": "^2.2.0",
     "react-icons": "^4.4.0",
+    "react-router-dom": "6",
+    "react-syntax-highlighter": "^15.5.0",
     "ts-classnames": "^0.1.1"
   },
   "devDependencies": {
     "@parcel/transformer-postcss": "2.5.*",
     "@parcel/transformer-sass": "2.5.*",
-    "@types/echarts": "^4.9.15",
     "@types/prop-types": "^15.7.5",
     "@types/react-dom": "^18.0.5",
-    "@types/react-helmet": "^6.1.5",
+    "@types/react-syntax-highlighter": "^15.5.1",
     "@types/tailwindcss": "^3.0.10",
     "@typescript-eslint/eslint-plugin": "^5.27.0",
     "@typescript-eslint/parser": "^5.27.0",
     "autoprefixer": "^10.4.7",
     "buffer": "^6.0.3",
     "eslint": "^8.16.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-react-hooks": "^4.5.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "mini-svg-data-uri": "^1.4.4",
     "parcel": "2.5.*",
     "postcss": "^8.4.14",
     "postcss-ts-classnames": "^0.3.0",
+    "pre-commit": "^1.2.2",
     "prettier": "^2.6.2",
     "prop-types": "^15.8.1",
     "stylelint": "^14.8.5",
@@ -60,8 +79,8 @@
     "plugins": {
       "tailwindcss": {},
       "postcss-ts-classnames": {
-        "isModule": true,
-        "exportAsDefault": true
+        "isModule": false,
+        "exportAsDefault": false
       }
     }
   },
@@ -86,5 +105,8 @@
         }
       ]
     }
+  },
+  "prettier": {
+    "printWidth": 120
   }
 }

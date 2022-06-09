@@ -30,7 +30,7 @@ async function handleMessage(
     case "parseFiles":
       return {
         type: "parseFiles",
-        data: await parseFiles(message.data),
+        klippyLog: await parseFiles(message.data),
       };
   }
 }

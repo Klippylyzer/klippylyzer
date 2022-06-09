@@ -8,7 +8,7 @@ export default function Footer({
   return (
     <footer
       className={cx(
-        className as unknown,
+        className as ClassNames,
         "p-4",
         "rounded-lg",
         "shadow",
@@ -16,7 +16,7 @@ export default function Footer({
         "md:items-center",
         "md:justify-between",
         "md:p-6",
-        "bg-white",
+        "bg-base-100",
         "dark:bg-gray-800"
       )}
     >

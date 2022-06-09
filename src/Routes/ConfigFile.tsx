@@ -1,7 +1,8 @@
-import React, { useMemo } from "react";
-import { BsArrowUp, BsLink } from "react-icons/bs";
+import React, { useCallback, useMemo } from "react";
+import { BsArrowUp, BsDownload, BsLink } from "react-icons/bs";
 import cx from "ts-classnames";
 
+import Button from "../Components/Buttons";
 import { KlippyLog } from "../types";
 import KlipperConfigParser, {
   ConfigFile,
@@ -22,17 +23,43 @@ export default function ConfigFile({ klippyLog }: Props) {
     }
   }, [klippyLog]);
 
+  const downloadConfig = useCallback(() => {
+    if (!klippyLog) return;
+
+    const blob = new Blob([klippyLog.config], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "printer.cfg";
+    a.click();
+  }, [klippyLog]);
+
   return (
     <div>
+      <h2 className={cx("flex", "flex-row", "justify-between")}>
+        <span>Klipper Config</span>
+        <Button
+          btn="Light"
+          onClick={downloadConfig}
+          className={cx("flex", "flex-row")}
+        >
+          <BsDownload /> download
+        </Button>
+      </h2>
+
       {config && (
         <div className={cx("sticky", "top-4", "float-right")}>
           <ul>
-            <li className={cx("text-lg")}>
+            <li
+              className={cx(
+                "text-lg",
+                "flex",
+                "justify-between",
+                "items-center"
+              )}
+            >
               TOC
-              <a
-                className={cx("float-right")}
-                onClick={() => window.scrollTo({ top: 0 })}
-              >
+              <a href="#" onClick={() => window.scrollTo({ top: 0 })}>
                 <BsArrowUp />
               </a>
             </li>
@@ -67,7 +94,7 @@ function RecursiveObject({
         <div className={cx("pl-4")} key={key}>
           <div
             id={["config", path.join("-"), key].filter(Boolean).join("--")}
-            className={cx("fw-bold")}
+            className={cx("font-bold")}
           >
             <a
               className={cx(

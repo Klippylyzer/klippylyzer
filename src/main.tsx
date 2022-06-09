@@ -1,19 +1,26 @@
 import "./main.scss";
-import "flowbite";
 
-import {StrictMode} from "react";
+// import "flowbite";
 import { createRoot } from "react-dom/client";
+import { HelmetProvider } from "react-helmet-async";
+import { BrowserRouter } from "react-router-dom";
 
 import App from "./App";
-
-const worker = new Worker(new URL("./worker/index.ts", import.meta.url), {
-  name: "klippyWorker",
-  type: "module",
-});
+import Database from "./Context/Database";
+import { Moonraker } from "./Context/Moonraker";
+import WebWorker from "./Context/WebWorker";
 
 const reactRoot = createRoot(document.getElementById("app") as HTMLDivElement);
 reactRoot.render(
-  <StrictMode>
-    <App worker={worker} />
-  </StrictMode>
+  <Database>
+    <WebWorker>
+      <Moonraker>
+        <HelmetProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </HelmetProvider>
+      </Moonraker>
+    </WebWorker>
+  </Database>
 );
