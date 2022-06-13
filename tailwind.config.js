@@ -2,6 +2,7 @@
 
 var colors = require("tailwindcss/colors");
 
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{html,js,ts,jsx,tsx}", "./node_modules/daisyui/**/*.js"],
   // Don't purge classnames in development, so classnames.d.ts is fully generated
@@ -22,6 +23,5 @@ module.exports = {
     require("@tailwindcss/line-clamp"),
     require("@tailwindcss/aspect-ratio"),
     require("daisyui"),
-    // require("flowbite/plugin"),
   ],
 };

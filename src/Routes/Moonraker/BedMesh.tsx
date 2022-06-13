@@ -23,10 +23,11 @@ import { Grid3DComponent } from "echarts-gl/components";
 import { useEffect, useRef, useState } from "react";
 import cx from "ts-classnames";
 
-import { useMoonraker } from "../Context/Moonraker";
-import { BedMeshStatus } from "../types";
-import { useRpcHandler } from "../utils/jsonrpc";
+import useMoonraker from "../../Context/Moonraker";
+import { BedMeshStatus } from "../../types";
+import { useRpcHandler } from "../../utils/jsonrpc";
 
+// TOOD: Reduce
 echarts.use([
   SurfaceChart,
   Grid3DComponent,

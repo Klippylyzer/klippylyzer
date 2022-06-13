@@ -41,10 +41,7 @@ function parseKlippyLine(line: string): Stats {
 function extractLastConfig(log: string): string {
   // Grab the section of text between the lines "===== Config file =====" and "======================="
 
-  return log.slice(
-    log.lastIndexOf("===== Config file =====") + 24,
-    log.lastIndexOf("=======================")
-  );
+  return log.slice(log.lastIndexOf("===== Config file =====") + 24, log.lastIndexOf("======================="));
 }
 
 export function parseKlippyLog(raw: string): KlippyLog {
@@ -67,4 +64,11 @@ export function statsToTemps(stats: Array<Stats>): Array<Temps> {
         .map(([key, value]) => [key, value.temp])
     ),
   }));
+}
+
+export function humanSize(bytes: number): string {
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
+  if (bytes === 0) return "0 B";
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
 }

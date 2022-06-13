@@ -4,9 +4,9 @@ import { BsCheckCircle, BsClock, BsXCircle } from "react-icons/bs";
 import { TbAlertTriangle } from "react-icons/tb";
 import cx from "ts-classnames";
 
-import { useMoonraker } from "../Context/Moonraker";
-import { JobStatus, MoonrakerHistoryTotals, MoonrakerJob } from "../types";
-import { useRpcHandler } from "../utils/jsonrpc";
+import useMoonraker from "../../Context/Moonraker";
+import { JobStatus, MoonrakerHistoryTotals, MoonrakerJob } from "../../types";
+import { useRpcHandler } from "../../utils/jsonrpc";
 
 function ApproxLength({ length }: { length: number }) {
   return (
@@ -36,23 +36,23 @@ function ApproxDuration({ duration }: { duration: number }) {
 }
 
 export default function History() {
-  const { rpc: client } = useMoonraker();
+  const { rpc } = useMoonraker();
   const [history, setHistory] = useState<Array<MoonrakerJob>>([]);
   const [totals, setTotals] = useState<null | MoonrakerHistoryTotals>(null);
 
   useEffect(() => {
-    if (!client) return;
+    if (!rpc) return;
 
-    client.call("server.history.totals").then(({ job_totals }) => {
+    rpc.call("server.history.totals").then(({ job_totals }) => {
       setTotals(job_totals);
     });
-    client.call("server.history.list").then(({ count, jobs }) => {
+    rpc.call("server.history.list").then(({ count, jobs }) => {
       setHistory(jobs);
       console.log(count, jobs.length);
     });
-  }, [client, setHistory, setTotals]);
+  }, [rpc, setHistory, setTotals]);
 
-  useRpcHandler(client, "notify_history_changed", ([{ action, job }]) => {
+  useRpcHandler(rpc, "notify_history_changed", ([{ action, job }]) => {
     console.log(action, job);
 
     setHistory(

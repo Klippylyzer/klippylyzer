@@ -2,13 +2,12 @@ import { produce } from "immer";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { BsPlus } from "react-icons/bs";
-import { ImSpinner3 } from "react-icons/im";
 import { TbPlugConnected } from "react-icons/tb";
-import { Link } from "react-router-dom";
 import cx from "ts-classnames";
 
-import { useMoonraker } from "../Context/Moonraker";
-import { Printer, useDb } from "../db";
+import useDb, { Printer } from "../Context/Database";
+import useMoonraker from "../Context/Moonraker";
+import { Spinner } from ".";
 import AddPrinterModal from "./AddPrinterModal";
 
 export default function Header({ children }: React.PropsWithChildren<unknown>) {
@@ -44,13 +43,6 @@ export default function Header({ children }: React.PropsWithChildren<unknown>) {
 
   return (
     <nav className={cx("navbar", "bg-gray-50", "border-gray-200", "dark:bg-gray-800", "rounded-box", "mb-4")}>
-      <div className={cx("flex-1", "px-2", "lg:flex-none")}>
-        <Link to="/" className={cx("flex", "items-center")}>
-          <img src={new URL("../img/icon.svg", import.meta.url).toString()} />
-          <span className={cx("ml-3", "text-xl")}>Klippylyzer</span>
-        </Link>
-      </div>
-
       <div className={cx("flex", "justify-end", "flex-1", "px-2")}>
         {children}
 
@@ -72,7 +64,7 @@ export default function Header({ children }: React.PropsWithChildren<unknown>) {
             {connectionStatus === "connected" ? (
               <TbPlugConnected className={cx("fill-success")} />
             ) : connectionStatus === "connecting" ? (
-              <ImSpinner3 className={cx("animate-spin")} />
+              <Spinner className={cx("animate-spin")} />
             ) : null}
           </label>
           <ul

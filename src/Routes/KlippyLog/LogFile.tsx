@@ -1,16 +1,16 @@
-import { useCallback, useContext, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import cx from "ts-classnames";
 
-import { WorkerContext } from "../Context/WebWorker";
-import { KlippyLog, KlippyWorkerMessages } from "../types";
+import useWorker from "../../Context/WebWorker";
+import { KlippyLog, KlippyWorkerMessages } from "../../types";
 
 interface Props {
   onChange: (klippLog: KlippyLog) => void;
 }
 export default function LogFile({ onChange }: Props) {
   const logFile = useRef<HTMLInputElement>(null);
-  const worker = useContext(WorkerContext);
+  const worker = useWorker();
   const navigate = useNavigate();
 
   const handleFileInput = useCallback(() => {

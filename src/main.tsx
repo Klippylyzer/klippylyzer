@@ -6,21 +6,24 @@ import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter } from "react-router-dom";
 
 import App from "./App";
-import Database from "./Context/Database";
-import { Moonraker } from "./Context/Moonraker";
-import WebWorker from "./Context/WebWorker";
+import { DatabaseProvider } from "./Context/Database";
+import { KlippyLogProvider } from "./Context/KlippyLog";
+import { MoonrakerProvider } from "./Context/Moonraker";
+import { WebWorkerProvider } from "./Context/WebWorker";
 
 const reactRoot = createRoot(document.getElementById("app") as HTMLDivElement);
 reactRoot.render(
-  <Database>
-    <WebWorker>
-      <Moonraker>
-        <HelmetProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </HelmetProvider>
-      </Moonraker>
-    </WebWorker>
-  </Database>
+  <WebWorkerProvider>
+    <DatabaseProvider>
+      <MoonrakerProvider>
+        <KlippyLogProvider>
+          <HelmetProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </HelmetProvider>
+        </KlippyLogProvider>
+      </MoonrakerProvider>
+    </DatabaseProvider>
+  </WebWorkerProvider>
 );

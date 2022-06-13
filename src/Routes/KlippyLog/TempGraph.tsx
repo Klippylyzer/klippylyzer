@@ -15,8 +15,8 @@ import { CanvasRenderer } from "echarts/renderers";
 import ECharts from "echarts-for-react/lib/core";
 import { useEffect, useRef, useState } from "react";
 
-import { Stats } from "../types";
-import { statsToTemps } from "../utils";
+import { Stats } from "../../types";
+import { statsToTemps } from "../../utils";
 
 echarts.use([
   LineChart,

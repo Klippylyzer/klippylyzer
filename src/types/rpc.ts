@@ -81,7 +81,7 @@ export interface MoonrakerServerRPC extends ServerRPCMethods {
   "machine.services.start": [{ service: string }, never];
   "machine.proc_stats": [never, { [key: string]: unknown }];
   "server.files.list": [
-    undefined | { path: string },
+    undefined | { root: string },
     Array<{ path: string; modified: number; size: number; permissions: string }>
   ];
   "server.files.metadata": [
@@ -257,12 +257,6 @@ export interface MoonrakerClientRPC extends ClientRPCMethods {
   notify_agent_event: [{ agent: string; event: "connected" | "disconnected" | string; data: unknown }];
 }
 
-export type MoonrakerAPI = {
-  "/printer/info": { GET: { response: MoonrakerPrinterInfo } };
-  "/server/info": { GET: { response: MoonrakerServerInfo } };
-  "/server/files/klippy.log": { GET: { response: string } };
-  "/server/files/moonraker.log": { GET: { response: string } };
-};
 /*
      HTTP Only requests
     

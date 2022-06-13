@@ -155,7 +155,11 @@ export function useRpcHandler<
   ServerRPC extends { [key: string]: [RPCRequest, RPCResponse] },
   ClientRPC extends { [key: string]: RPCResponse },
   Method extends keyof ClientRPC
->(rpc: null | JsonRPCClient<ServerRPC, ClientRPC>, method: Method, handler: (params: ClientRPC[Method]) => void) {
+>(
+  rpc: undefined | null | JsonRPCClient<ServerRPC, ClientRPC>,
+  method: Method,
+  handler: (params: ClientRPC[Method]) => void
+) {
   useEffect(() => {
     if (rpc) {
       rpc.addHandler(method, handler);

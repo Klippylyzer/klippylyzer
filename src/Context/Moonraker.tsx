@@ -1,22 +1,32 @@
+import { produce } from "immer";
 import { createContext, PropsWithChildren, useCallback, useContext, useState } from "react";
 
-import { Printer } from "../db";
+import { Printer } from "../Context/Database";
 import { MoonrakerClientRPC, MoonrakerClientType, MoonrakerServerRPC } from "../types";
 import JsonRPCClient from "../utils/jsonrpc";
 import klippylyzerVersion from "../version";
+
+interface AgentMethods {
+  "klippylyzer.version": never;
+  "klippylyzer.echo": unknown;
+}
 
 type OnStatusChangeHandler = (
   status: "connecting" | "connected" | "disconnected" | "error",
   error?: string | Error
 ) => void;
 
-interface MoonrakerContext {
-  connect: (printer: Printer, onStatusChange?: OnStatusChangeHandler, clientType?: MoonrakerClientType) => void;
-  disconnect: () => void;
+export type MoonrakerRPCClient = JsonRPCClient<MoonrakerServerRPC, MoonrakerClientRPC & AgentMethods>;
 
-  printer: null | Printer;
+type Connect = (printer: Printer, onStatusChange?: OnStatusChangeHandler, clientType?: MoonrakerClientType) => void;
+type Disconnect = () => void;
+export interface MoonrakerContext {
+  connect: Connect;
+  disconnect: Disconnect;
 
-  rpc: null | JsonRPCClient<MoonrakerServerRPC, MoonrakerClientRPC>;
+  printer?: Printer;
+
+  rpc?: MoonrakerRPCClient;
   //   rest: null | RestClient<MoonrakerAPI>;
 }
 
@@ -27,33 +37,19 @@ const moonrakerContext = createContext<MoonrakerContext>({
   disconnect() {
     throw new Error("not ready");
   },
-  rpc: null,
-  //   rest: null,
-  printer: null,
 });
 
-export function useMoonraker(): MoonrakerContext {
-  return useContext(moonrakerContext);
-}
-
-interface AgentMethods {
-  "klippylyzer.version": never;
-  "klippylyzer.echo": unknown;
-}
-
-export function Moonraker({ children }: PropsWithChildren<unknown>) {
-  const [printer, setPrinter] = useState<null | Printer>(null);
-  const [rpc, setRpcClient] = useState<null | JsonRPCClient<MoonrakerServerRPC, MoonrakerClientRPC & AgentMethods>>(
-    null
-  );
-  //   const [rest, setRestClient] = useState<null | RestClient<MoonrakerAPI>>(null);
+export function MoonrakerProvider({ children }: PropsWithChildren<unknown>) {
+  const [{ printer, rpc }, setState] = useState<{
+    printer?: Printer;
+    rpc?: MoonrakerRPCClient;
+  }>({});
 
   const disconnect = useCallback(() => {
-    if (!rpc) return;
+    if (rpc) rpc.close();
 
-    rpc.close();
-    setRpcClient(null);
-  }, [rpc, setRpcClient]);
+    setState({});
+  }, [rpc, setState]);
 
   const connect = useCallback<MoonrakerContext["connect"]>(
     async function (printer: Printer, onStatusChange?: OnStatusChangeHandler, clientType: MoonrakerClientType = "web") {
@@ -61,7 +57,11 @@ export function Moonraker({ children }: PropsWithChildren<unknown>) {
         disconnect();
       }
 
-      setPrinter(printer);
+      setState(
+        produce((draft) => {
+          draft.printer = printer;
+        })
+      );
 
       const url = new URL("/websocket", printer.url);
       if (url.protocol === "https:") {
@@ -84,10 +84,20 @@ export function Moonraker({ children }: PropsWithChildren<unknown>) {
       const rpcClient = new JsonRPCClient<MoonrakerServerRPC, AgentMethods & MoonrakerClientRPC>(new WebSocket(url));
       console.log("rpcClient", rpcClient);
 
-      setRpcClient(rpcClient);
+      setState(
+        produce((draft) => {
+          draft.rpc = rpcClient;
+        })
+      );
+
       rpcClient.onClose(() => {
         onStatusChange?.("disconnected");
-        setRpcClient(null);
+
+        setState(
+          produce((draft) => {
+            delete draft.rpc;
+          })
+        );
       });
 
       const { connection_id } = await rpcClient.call("server.connection.identify", {
@@ -121,4 +131,8 @@ export function Moonraker({ children }: PropsWithChildren<unknown>) {
       {children}
     </moonrakerContext.Provider>
   );
+}
+
+export default function useMoonraker(): MoonrakerContext {
+  return useContext(moonrakerContext);
 }

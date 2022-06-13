@@ -1,8 +1,7 @@
 import { KlippyLog, Temps } from "../types";
 import { statsToTemps } from ".";
 
-export function searchForAbnormalTemperatureSpikes(log: KlippyLog) {
-  const allTemps = statsToTemps(log.stats);
+function calculateRunningAverages(allTemps: Temps[]) {
   const averages: Temps[] = [];
 
   let runningTemps: Temps[] = [];
@@ -17,12 +16,31 @@ export function searchForAbnormalTemperatureSpikes(log: KlippyLog) {
     );
 
     averages.push(
-      Object.fromEntries(
-        Object.entries(average).map(([key, value]) => [
-          key,
-          value / runningTemps.length,
-        ])
-      )
+      Object.fromEntries(Object.entries(average).map(([key, value]) => [key, value / runningTemps.length]))
     );
   }
+
+  return averages;
+}
+export function searchForAbnormalTemperatureSpikes(log: KlippyLog) {
+  const allTemps = statsToTemps(log.stats);
+  const averages = calculateRunningAverages(allTemps);
+
+  const anomalies = [];
+  let lastAverage = averages[0];
+  for (const average of averages.slice(1)) {
+    for (const [key, value] of Object.entries(average)) {
+      if (lastAverage[key] > 0 && value > lastAverage[key] * 1.2) {
+        anomalies.push({
+          time: average.time,
+          name: key,
+          previousAverage: lastAverage[key],
+          value,
+        });
+      }
+    }
+    lastAverage = average;
+  }
+
+  return anomalies;
 }

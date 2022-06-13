@@ -1,9 +1,9 @@
-import React, { FormEvent, useCallback, useContext, useRef, useState } from "react";
+import React, { FormEvent, useCallback, useRef, useState } from "react";
 import { BsCheckCircle, BsSlashCircle } from "react-icons/bs";
-import { ImSpinner3 } from "react-icons/im";
 import cx from "ts-classnames";
 
-import { DbContext, Printer } from "../db";
+import useDb, { Printer } from "../Context/Database";
+import { Spinner } from ".";
 import Button from "./Buttons";
 import Modal from "./Modal";
 
@@ -21,7 +21,7 @@ export default function AddPrinterModal({
   const currentUrl = new URL(document.location.href);
   const defaultMoonrakerUrl = currentUrl.protocol + "//mainsailos.local";
 
-  const db = useContext(DbContext);
+  const db = useDb();
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -227,7 +227,7 @@ export default function AddPrinterModal({
                   Test Connection
                 </Button>
                 {connectionStatus?.status === "PENDING" ? (
-                  <ImSpinner3 size="2rem" className={cx("ml-1", "fill-gray-500", "animate-spin")} />
+                  <Spinner size="2rem" className={cx("ml-1", "fill-gray-500", "animate-spin")} />
                 ) : connectionStatus?.status === "SUCCESS" ? (
                   <BsCheckCircle size="2rem" className={cx("pl-1", "fill-success")} />
                 ) : connectionStatus?.status === "ERROR" ? (

@@ -1,39 +1,35 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { toast, Toaster } from "react-hot-toast";
-import { BsClockHistory, BsFileText, BsFillCpuFill, BsGear, BsThermometerHalf, BsX } from "react-icons/bs";
+import { BsClockHistory, BsFileLock, BsFileText, BsFillCpuFill, BsGear, BsThermometerHalf, BsX } from "react-icons/bs";
 import { TbGridDots } from "react-icons/tb";
-import { Navigate, NavLink, Route, Routes } from "react-router-dom";
+import { NavLink, Route, Routes } from "react-router-dom";
 import cx from "ts-classnames";
 
-import Button from "./Components/Buttons";
-import Header from "./Components/Header";
-import { useMoonraker } from "./Context/Moonraker";
-import BedMesh from "./Routes/BedMesh";
-import ConfigFile from "./Routes/ConfigFile";
-import History from "./Routes/History";
-import LogFile from "./Routes/LogFile";
-import Log from "./Routes/LogViewer";
-import Stats from "./Routes/Stats";
-import TempGraph from "./Routes/TempGraph";
+import Drawer from "./Components/Drawer";
+import useMoonraker from "./Context/Moonraker";
+import KlippyLogRoutes from "./Routes/KlippyLog/Routes";
+import MoonrakerRoutes from "./Routes/Moonraker/Routes";
 import { KlippyLog } from "./types";
-import { parseKlippyLog } from "./utils";
-// import { useRpcHandler } from "./utils/jsonrpc";
+import { humanSize, parseKlippyLog } from "./utils";
 
 export default function App() {
   const [klippyLog, setKlippyLog] = useState<KlippyLog>();
-  const { rpc: client } = useMoonraker();
+  const moonraker = useMoonraker();
 
   useEffect(() => {
-    if (!client) return;
+    if (!moonraker.printer) return;
 
-    const url = new URL("/server/files/klippy.log", client.ws.url);
-    url.protocol = url.protocol === "wss:" ? "https:" : "http:";
+    const url = new URL("/server/files/klippy.log", moonraker.printer.url);
 
     fetch(url.toString())
       .then((res) => res.text())
-      .then((logString) => setKlippyLog(parseKlippyLog(logString)));
-  }, [client]);
+      .then((logString) => {
+        toast(`Got ${humanSize(logString.length)} log file `, { icon: <BsFileText size="1.5rem" /> });
+
+        setKlippyLog(parseKlippyLog(logString));
+      });
+  }, [moonraker.printer]);
 
   return (
     <div className={cx("flex", "flex-col", "h-screen", "p-4")}>
@@ -43,149 +39,73 @@ export default function App() {
         }}
       >
         <meta charSet="utf-8" />
-        <title>Klippylizer</title>
+        <title>Klippylyzer</title>
       </Helmet>
 
-      <Header>
-        <ul
-          className={cx(
-            "flex",
-            "flex-col",
-            "mt-4",
-            "md:flex-row",
-            "md:space-x-1",
-            "md:mt-0",
-            "md:text-base",
-            "md:font-medium"
-          )}
+      <Routes>
+        <Route
+          element={
+            <Drawer klippyLog={klippyLog} clearLog={() => setKlippyLog(undefined)}>
+              <>
+                <li>
+                  <NavLink to="/moonraker/backups">
+                    <BsFileLock className={cx("mr-2")} /> Backups
+                  </NavLink>
+                </li>
+
+                {moonraker.rpc && (
+                  <>
+                    <li>
+                      <NavLink to="/moonraker/history">
+                        <BsClockHistory className={cx("mr-2")} /> History
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/moonraker/bed_mesh">
+                        <TbGridDots className={cx("mr-2")} /> Mesh
+                      </NavLink>
+                    </li>
+                  </>
+                )}
+
+                {klippyLog && (
+                  <>
+                    <li>
+                      <NavLink to="/analysis/config">
+                        <BsGear className={cx("mr-2")} />
+                        Config
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/analysis/temps">
+                        <BsThermometerHalf className={cx("mr-2")} />
+                        Temp Graph
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/analysis/log">
+                        <BsFileText className={cx("mr-2")} />
+                        Log
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/analysis/stats">
+                        <BsFillCpuFill className={cx("mr-2")} />
+                        Stats
+                      </NavLink>
+                    </li>
+                  </>
+                )}
+              </>
+            </Drawer>
+          }
         >
-          {client && (
-            <>
-              <li>
-                <NavLink
-                  to="/moonraker/history"
-                  className={({ isActive }) =>
-                    cx(...Button.Styles.Light, "flex", "flex-row", "items-center", {
-                      "bg-blue-800": isActive,
-                      "dark:bg-blue-800": isActive,
-                    })
-                  }
-                >
-                  <BsClockHistory className={cx("mr-2")} /> History
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/moonraker/bed_mesh"
-                  className={({ isActive }) =>
-                    cx(...Button.Styles.Light, "flex", "flex-row", "items-center", {
-                      "bg-blue-800": isActive,
-                      "dark:bg-blue-800": isActive,
-                    })
-                  }
-                >
-                  <TbGridDots className={cx("mr-2")} /> Mesh
-                </NavLink>
-              </li>
-            </>
-          )}
-
-          {klippyLog && (
-            <>
-              <li>
-                <NavLink
-                  to="/analysis/config"
-                  className={({ isActive }) =>
-                    cx(...Button.Styles.Light, "flex", "flex-row", "items-center", {
-                      "bg-blue-800": isActive,
-                      "dark:bg-blue-800": isActive,
-                    })
-                  }
-                >
-                  <BsGear className={cx("mr-2")} />
-                  Config
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/analysis/temps"
-                  className={({ isActive }) =>
-                    cx(...Button.Styles.Light, "flex", "flex-row", "items-center", {
-                      "bg-blue-800": isActive,
-                      "dark:bg-blue-800": isActive,
-                    })
-                  }
-                >
-                  <BsThermometerHalf className={cx("mr-2")} />
-                  Temp Graph
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/analysis/log"
-                  className={({ isActive }) =>
-                    cx(...Button.Styles.Light, "flex", "flex-row", "items-center", {
-                      "bg-blue-800": isActive,
-                      "dark:bg-blue-800": isActive,
-                    })
-                  }
-                >
-                  <BsFileText className={cx("mr-2")} />
-                  Log
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/analysis/stats"
-                  className={({ isActive }) =>
-                    cx(...Button.Styles.Light, "flex", "flex-row", "items-center", {
-                      "bg-blue-800": isActive,
-                      "dark:bg-blue-800": isActive,
-                    })
-                  }
-                >
-                  <BsFillCpuFill className={cx("mr-2")} />
-                  Stats
-                </NavLink>
-              </li>
-            </>
-          )}
-        </ul>
-      </Header>
-
-      <section className={cx("flex-grow")}>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <section className={cx("flex", "flex-row", "justify-center", "gap-2")}>
-                <LogFile onChange={(klippyLog) => setKlippyLog(klippyLog)} />
-              </section>
-            }
-          />
-
-          {client ? (
-            <Route path="/moonraker">
-              <Route path="bed_mesh" element={<BedMesh />} />
-              <Route path="history" element={<History />} />
-            </Route>
-          ) : (
-            <Route path="/moonraker/*" element={<Navigate to="/" replace={true} />} />
-          )}
-          {klippyLog ? (
-            <Route path="/analysis">
-              <Route path="temps" element={<TempGraph stats={klippyLog.stats} />} />
-              <Route path="config" element={<ConfigFile klippyLog={klippyLog} />} />
-              <Route path="log" element={<Log klippyLog={klippyLog} />} />
-              <Route path="stats" element={<Stats klippyLog={klippyLog} />} />
-            </Route>
-          ) : (
-            <Route path="/analysis/*" element={<Navigate to="/" replace={true} />}></Route>
-          )}
+          {MoonrakerRoutes(moonraker)}
+          {KlippyLogRoutes({ klippyLog, setKlippyLog })}
 
           <Route path="*" element={<section>404 not found</section>} />
-        </Routes>
-      </section>
+        </Route>
+      </Routes>
 
       <Toaster
         position="bottom-right"
