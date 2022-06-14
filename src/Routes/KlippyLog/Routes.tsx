@@ -23,7 +23,7 @@ export default function KlippyLogRoutes({ klippyLog, setKlippyLog }: Props) {
         <Route path="" element={<Analysis klippyLog={klippyLog} />} />
 
         <Route path="analysis" element={<Outlet />}>
-          <Route path="temps" element={<LoadingPage children={<TempGraph stats={klippyLog.stats} />} />} />
+          <Route path="temps" element={<LoadingPage children={<TempGraph klippyLog={klippyLog} />} />} />
           <Route path="config" element={<LoadingPage children={<ConfigFile klippyLog={klippyLog} />} />} />
           <Route path="log" element={<LoadingPage children={<Log klippyLog={klippyLog} />} />} />
           <Route path="stats" element={<LoadingPage children={<Stats klippyLog={klippyLog} />} />} />

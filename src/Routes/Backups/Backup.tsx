@@ -66,7 +66,7 @@ export default function Backup() {
           </thead>
           <tbody>
             {backupFiles.map((backupFile) => (
-              <tr>
+              <tr key={backupFile.id}>
                 <td>
                   <NavLink to={`file/${backupFile.path}`}>{backupFile.path}</NavLink>
                 </td>

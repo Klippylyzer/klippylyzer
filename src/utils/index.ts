@@ -44,10 +44,21 @@ function extractLastConfig(log: string): string {
   return log.slice(log.lastIndexOf("===== Config file =====") + 24, log.lastIndexOf("======================="));
 }
 
+function extractEpoch(log: string): number {
+  // Start printer at Tue May 31 11:43:46 2022 (1654015426.9 180343.4)
+  const match = /^Start printer at [\w\d :]+ \((\d+\.\d+) (\d+\.\d+)\)$/m.exec(log);
+  console.log(match);
+  if (match) {
+    return parseFloat(match[1]) - parseFloat(match[2]);
+  }
+  return 0;
+}
+
 export function parseKlippyLog(raw: string): KlippyLog {
   return {
     raw,
     config: extractLastConfig(raw),
+    epoch: extractEpoch(raw),
     stats: raw
       .split("\n")
       .filter((line) => line.startsWith("Stats "))
@@ -58,7 +69,7 @@ export function parseKlippyLog(raw: string): KlippyLog {
 export function statsToTemps(stats: Array<Stats>): Array<Temps> {
   return stats.map((stat) => ({
     time: stat.time,
-    ...Object.fromEntries(
+    temps: Object.fromEntries(
       Object.entries(stat.values)
         .filter(([, value]) => value.temp !== undefined)
         .map(([key, value]) => [key, value.temp])

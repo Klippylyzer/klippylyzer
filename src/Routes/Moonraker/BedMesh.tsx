@@ -20,7 +20,8 @@ import {
 import ECharts from "echarts-for-react/lib/core";
 import { SurfaceChart } from "echarts-gl/charts";
 import { Grid3DComponent } from "echarts-gl/components";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import colors from "tailwindcss/colors";
 import cx from "ts-classnames";
 
 import useMoonraker from "../../Context/Moonraker";
@@ -111,6 +112,7 @@ export default function BedMesh() {
       series.push({
         type: "surface",
         data: bedMeshToSeries(bedMesh.probed_matrix, meshSize),
+        dataShape: [bedMesh.probed_matrix.length, bedMesh.probed_matrix[0].length],
       });
     }
 
@@ -118,63 +120,99 @@ export default function BedMesh() {
       series.push({
         type: "surface",
         data: bedMeshToSeries(bedMesh.mesh_matrix, bedSize),
+        dataShape: [bedMesh.mesh_matrix.length, bedMesh.mesh_matrix[0].length],
       });
     }
 
     chart.current.getEchartsInstance().setOption({ series });
   }, [bedMesh, bedSize, meshType, chart]);
 
-  useEffect(() => {
-    if (!chart.current) return;
+  const { center, min, max, scaleMin, scaleMax } = useMemo(() => {
+    // Find min and max deviation of the mesh
+    if (!bedMesh?.mesh_matrix) return { center: 0, min: 0, max: 0, scaleMin: 0.2, scaleMax: 2 };
 
-    chart.current.getEchartsInstance().setOption({ zAxis3D: { type: "value", min: -scale, max: scale } });
-  }, [scale, chart]);
+    const mesh = bedMesh.mesh_matrix;
+    const min = Math.min(...mesh.flatMap((row) => row.flatMap((value) => value)));
+    const max = Math.max(...mesh.flatMap((row) => row.flatMap((value) => value)));
+
+    const center = (max + min) / 2;
+    const scaleMin = Math.ceil((max - min) * 10) / 10;
+    const scaleMax = scaleMin * 10;
+
+    const resp = { center, scaleMin, scaleMax, min, max };
+    console.log(resp);
+    return resp;
+  }, [bedMesh]);
+
+  const axisFormat = {
+    axisLine: { lineStyle: { color: colors.gray[300] } },
+    axisLabel: {
+      textStyle: { color: colors.gray[200] },
+      formatter: (value: number) => (value > 10 ? `${Math.floor(value)} mm ` : `${value.toFixed(1)} mm`),
+    },
+  };
 
   return (
     <section>
-      <h3>Bed Mesh</h3>
+      <h3 className={cx("text-xl")}>Bed Mesh</h3>
 
-      <div className={cx("flex", "flex-row")}>
-        <div style={{ width: "60px", height: "600px" }}>
-          <input
-            type="range"
-            min={bedMesh ? bedMesh.mesh_matrix?.reduce((a, b) => Math.min(a, Math.min(...b)), 0) : 0.5}
-            max={10}
-            step={0.5}
-            value={scale}
-            onChange={(evt) => setScale(parseFloat(evt.target.value))}
-            // Hack for Firefox vertical slider
-            {...{ orient: "vertical" }}
-            style={{
-              height: "500px",
-              width: "22px",
-              // Hack for IE vertical slider
-              writingMode: "bt-lr" as Property.WritingMode,
-              WebkitAppearance: "slider-vertical",
-            }}
-          />
-          <label>
+      <div className={cx("flex", "flex-row")} style={{ height: "600px" }}>
+        <div className={cx("flex-1", "flex", "flex-col", "h-full", "items-end", "justify-between")}>
+          <label className={cx("flex", "flex-row", "h-1/2")}>
+            <div className={cx("flex", "flex-col", "justify-between")}>
+              {new Array(11)
+                .fill(null)
+                .map((_, i) => ((scaleMax - scaleMin) / 10) * (10 - i) + scaleMin)
+
+                .map((v) => (
+                  <span key={v} onClick={() => setScale(v)} className={cx("text-gray-400")}>
+                    {v.toFixed(1)} mm
+                  </span>
+                ))}
+            </div>
             <input
-              type="radio"
-              name="meshType"
-              onChange={() => setMeshType("probed")}
-              checked={meshType === "probed"}
-            />{" "}
-            Probed
+              type="range"
+              min={scaleMin}
+              max={scaleMax}
+              step={(scaleMax - scaleMin) / 10}
+              value={scale}
+              onChange={(evt) => setScale(parseFloat(evt.target.value))}
+              // Hack for Firefox vertical slider
+              {...{ orient: "vertical" }}
+              style={{
+                height: "100%",
+                width: "22px",
+                // Hack for IE vertical slider
+                writingMode: "bt-lr" as Property.WritingMode,
+                WebkitAppearance: "slider-vertical",
+              }}
+            />
           </label>
-          <label>
-            <input
-              type="radio"
-              name="meshType"
-              onChange={() => setMeshType("interpolated")}
-              checked={meshType === "interpolated"}
-            />{" "}
-            Interpolated
-          </label>
-          <label>
-            <input type="radio" name="meshType" onChange={() => setMeshType("both")} checked={meshType === "both"} />{" "}
-            Both
-          </label>
+
+          <div className={cx("flex", "flex-col", "items-end")}>
+            <label className={cx("whitespace-nowrap")}>
+              {"Probed "}
+              <input
+                type="radio"
+                name="meshType"
+                onChange={() => setMeshType("probed")}
+                checked={meshType === "probed"}
+              />
+            </label>
+            <label className={cx("whitespace-nowrap")}>
+              {"Interpolated "}
+              <input
+                type="radio"
+                name="meshType"
+                onChange={() => setMeshType("interpolated")}
+                checked={meshType === "interpolated"}
+              />
+            </label>
+            <label className={cx("whitespace-nowrap")}>
+              {"Both "}
+              <input type="radio" name="meshType" onChange={() => setMeshType("both")} checked={meshType === "both"} />
+            </label>
+          </div>
         </div>
 
         <ECharts
@@ -183,10 +221,18 @@ export default function BedMesh() {
           style={{ height: "600px", width: "100%" }}
           option={{
             darkMode: true,
-            textStyle: { color: "rgb(229, 231, 235)" },
+            // textStyle: { color: colors.gray[200] },
             visualMap: {
-              show: false,
+              show: true,
               dimension: 2,
+              top: 0,
+              right: 0,
+              left: "auto",
+              bottom: "auto",
+              min: min,
+              max: max,
+              formatter: (value: number) => `${value.toFixed(2)} mm`,
+              textStyle: { color: colors.gray[200] },
               inRange: {
                 color: [
                   "#313695",
@@ -203,15 +249,14 @@ export default function BedMesh() {
                 ],
               },
             },
-            xAxis3D: { type: "value" },
-            yAxis3D: { type: "value" },
-            zAxis3D: { type: "value", min: -1, max: 1 },
+            xAxis3D: { type: "value", ...axisFormat },
+            yAxis3D: { type: "value", ...axisFormat },
+            zAxis3D: { type: "value", min: center - scale, max: center + scale, ...axisFormat },
             grid3D: {
               viewControl: {
                 // projection: "orthographic",
               },
             },
-            series: [],
           }}
         />
       </div>

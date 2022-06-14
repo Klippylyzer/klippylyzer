@@ -1,6 +1,7 @@
 import { PrismLight } from "react-syntax-highlighter";
 import PrismLanguageLog from "react-syntax-highlighter/dist/esm/languages/prism/log";
 import PrismThemeTomorrow from "react-syntax-highlighter/dist/esm/styles/prism/tomorrow";
+import cx from "ts-classnames";
 
 import { KlippyLog } from "../../types";
 
@@ -11,11 +12,15 @@ type Props = { klippyLog: KlippyLog };
 export default function Log({ klippyLog }: Props) {
   return (
     <section>
-      <h4>Raw Log</h4>
+      <h3 className={cx("text-xl")}>Raw Log</h3>
 
-      <PrismLight language="log" style={PrismThemeTomorrow}>
-        {klippyLog.raw}
-      </PrismLight>
+      {klippyLog.raw.length > 10000 ? (
+        <pre>{klippyLog.raw}</pre>
+      ) : (
+        <PrismLight language="log" style={PrismThemeTomorrow}>
+          {klippyLog.raw}
+        </PrismLight>
+      )}
     </section>
   );
 }

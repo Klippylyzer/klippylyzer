@@ -32,9 +32,9 @@ export default function ConfigFile({ klippyLog }: Props) {
   }, [klippyLog]);
 
   return (
-    <div>
+    <section>
       <h2 className={cx("flex", "flex-row", "justify-between")}>
-        <span>Klipper Config</span>
+        <span className={cx("text-xl")}>Klipper Config</span>
         <Button btn="Light" onClick={downloadConfig} className={cx("flex", "flex-row")}>
           <BsDownload /> download
         </Button>
@@ -60,7 +60,7 @@ export default function ConfigFile({ klippyLog }: Props) {
         </div>
       )}
       <code>{config && <RecursiveObject object={config} />}</code>
-    </div>
+    </section>
   );
 }
 
@@ -69,13 +69,16 @@ function RecursiveObject({ object, path = [] }: { object: ConfigFile | Section; 
     <>
       {Object.entries(object).map(([key, value]) => (
         <div className={cx("pl-4")} key={key}>
-          <div id={["config", path.join("-"), key].filter(Boolean).join("--")} className={cx("font-bold")}>
+          <div
+            id={["config", path.join("-"), key].filter(Boolean).join("--")}
+            className={cx("font-bold", "flex", "align-top", "gap-2")}
+          >
             <a
               className={cx("group", "focus:text-blue-300", "dark:focus:text-blue-300")}
               href={"#" + ["config", path.join("-"), key].filter(Boolean).join("--")}
             >
               <BsLink className={cx("inline-block", "mr-1", "invisible", "group-hover:visible")} />
-              {key}
+              {path.length === 0 ? `[${key}]` : key}
             </a>
 
             {typeof value === "number" || typeof value === "boolean" ? (

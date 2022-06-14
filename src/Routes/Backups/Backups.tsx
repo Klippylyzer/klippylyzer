@@ -128,7 +128,7 @@ export default function Backups() {
       <table className={cx("table", "table-zebra", "w-full")}>
         <tbody>
           {backups.map((backup) => (
-            <tr>
+            <tr key={backup.id}>
               <td>
                 <NavLink to={`${backup.id}`}>{backup.name}</NavLink>
               </td>
