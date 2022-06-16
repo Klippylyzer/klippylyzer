@@ -10,7 +10,16 @@ export default function ModalHeader({ children }: Props) {
 
   return (
     <div
-      className={cx("flex", "justify-between", "items-center", "p-5", "rounded-t", "border-b", "dark:border-gray-600")}
+      className={cx(
+        "flex",
+        "justify-between",
+        "items-center",
+        "gap-2",
+        "p-5",
+        "rounded-t",
+        "border-b",
+        "dark:border-gray-600"
+      )}
     >
       {children}
 

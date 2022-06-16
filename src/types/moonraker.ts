@@ -39,6 +39,17 @@ export interface ZCalibrationStatus {
   last_z_offset: number;
 }
 
+export interface GCodeMove {
+  speed_factor: number;
+  speed: number;
+  extrude_factor: number;
+  absolute_coordinates: boolean;
+  absolute_extrude: boolean;
+  homing_origin: PositionTuple;
+  position: PositionTuple;
+  gcode_position: PositionTuple;
+}
+
 export interface MotionReport {
   live_position: PositionTuple;
   live_velocity: number;

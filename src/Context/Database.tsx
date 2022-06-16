@@ -18,6 +18,10 @@ export interface Log {
 
 export interface Config {
   lastPrinter?: number;
+
+  autoConnectLastPrinter?: boolean;
+  autoBackupOnConnect?: boolean;
+  autoClearOldBackups?: boolean;
 }
 
 export interface BackupFile {
@@ -74,7 +78,8 @@ export async function getDb() {
     upgrade(db, oldVersion) {
       switch (oldVersion) {
         case 0: {
-          db.createObjectStore("config", {});
+          const configStore = db.createObjectStore("config", {});
+          configStore.put({}, 0);
 
           const logStore = db.createObjectStore("logs", {
             keyPath: "id",

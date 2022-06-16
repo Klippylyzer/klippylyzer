@@ -1,5 +1,4 @@
 import produce from "immer";
-import JSZip from "jszip";
 import { useCallback, useEffect, useState } from "react";
 import { BsDownload, BsSave } from "react-icons/bs";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -8,7 +7,7 @@ import cx from "ts-classnames";
 import Modal from "../../Components/Modal";
 import useDb, { Backup } from "../../Context/Database";
 import useMoonraker from "../../Context/Moonraker";
-import { createBackup } from "./utils";
+import { createBackup, zipBackup } from "./utils";
 
 interface BackupState {
   running: boolean;
@@ -36,18 +35,7 @@ export default function Backups() {
 
   const downloadBackup = useCallback(
     async (backup: Backup) => {
-      const backupFileIds = backup.files.map(({ id }) => id);
-      const zipFile = new JSZip();
-
-      let cursor = await db.transaction(["backupFile"], "readonly").objectStore("backupFile").openCursor();
-      while (cursor) {
-        if (backupFileIds.includes(cursor.value.id || -1)) {
-          zipFile.file(cursor.value.path, cursor.value.contents);
-        }
-        cursor = await cursor.continue();
-      }
-
-      const zipFileBlob = zipFile.generateAsync({ type: "blob" });
+      const zipFileBlob = await zipBackup(db, backup);
       const zipFileBlobUrl = URL.createObjectURL(await zipFileBlob);
       const zipFileBlobLink = document.createElement("a");
       zipFileBlobLink.href = zipFileBlobUrl;

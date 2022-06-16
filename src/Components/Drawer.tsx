@@ -1,7 +1,6 @@
-import { produce } from "immer";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { BsPlus } from "react-icons/bs";
+import { BsMenuButton } from "react-icons/bs";
 import { TbPlugConnected } from "react-icons/tb";
 import { NavLink, Outlet } from "react-router-dom";
 import cx from "ts-classnames";
@@ -9,7 +8,6 @@ import cx from "ts-classnames";
 import useDb, { Printer } from "../Context/Database";
 import useMoonraker from "../Context/Moonraker";
 import { KlippyLog } from "../types";
-import AddPrinterModal from "./AddPrinterModal";
 
 interface Props {
   klippyLog?: KlippyLog;
@@ -20,22 +18,26 @@ export default function Drawer({ klippyLog, clearLog, children }: React.PropsWit
   const moonraker = useMoonraker();
 
   const [printers, setPrinters] = useState<Array<Printer>>([]);
-  const [showAddPrinter, setShowAddPrinter] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState<"disconnected" | "connecting" | "connected" | "error">(
-    "disconnected"
-  );
 
   const connectToPrinter = useCallback(
     (printer: Printer) => {
       moonraker.connect(printer, (status) => {
-        setConnectionStatus(status);
+        switch (status) {
+          case "connected":
+            toast(`Connected to ${printer.name}`, { icon: <TbPlugConnected size="1.5rem" /> });
+            break;
 
-        if (status === "connected") {
-          toast(`Connected to ${printer.name}`, { icon: <TbPlugConnected size="1.5rem" /> });
+          case "error":
+            toast(`Error connecting to ${printer.name}`, { icon: <TbPlugConnected size="1.5rem" /> });
+            break;
+
+          case "disconnected":
+            toast(`Lost connection to ${printer.name}`, { icon: <TbPlugConnected size="1.5rem" /> });
+            break;
         }
       });
     },
-    [moonraker, setConnectionStatus]
+    [moonraker]
   );
   const disconnect = useCallback(() => {
     moonraker?.disconnect();
@@ -51,23 +53,17 @@ export default function Drawer({ klippyLog, clearLog, children }: React.PropsWit
     <div className={cx("drawer", "drawer-mobile")}>
       <input type="checkbox" id="drawer-toggle" className={cx("drawer-toggle")} />
 
-      <div className={cx("drawer-content", "ml-2")}>
-        <AddPrinterModal
-          onSave={(printer: Printer) =>
-            setPrinters(
-              produce((draft) => {
-                draft.push(printer);
-              })
-            )
-          }
-          hideModal={() => setShowAddPrinter(false)}
-          showModal={showAddPrinter}
-        />
-
+      <div className={cx("drawer-content", "lg:mx-2")}>
         <Outlet />
+
+        <label htmlFor="drawer-toggle" className={cx("btn", "btn-primary", "drawer-overlay", "lg:hidden")}>
+          <BsMenuButton />
+        </label>
       </div>
 
       <div className={cx("drawer-side")}>
+        <label htmlFor="drawer-toggle" className={cx("drawer-overlay")}></label>
+
         <ul className={cx("menu", "p-4", "overflow-y-auto", "w-80", "bg-base-100", "text-base-content")}>
           <li>
             <NavLink to="/" className={cx("flex", "items-center")}>
@@ -101,13 +97,6 @@ export default function Drawer({ klippyLog, clearLog, children }: React.PropsWit
                   </a>
                 </li>
               ))}
-              <li>
-                <a className={cx("flex", "flex-row", "justify-between")} onClick={() => setShowAddPrinter(true)}>
-                  <span>Add Printer</span>
-
-                  <BsPlus />
-                </a>
-              </li>
             </>
           )}
         </ul>

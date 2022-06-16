@@ -81,25 +81,26 @@ type ChartData = {
 export default function TempGraph({ klippyLog: { stats, epoch } }: Props) {
   const chart = useRef<ECharts>(null);
   const [chartData, setChartData] = useState<null | ChartData>(null);
-  const [markAreas, setMarkAreas] = useState<{
+  const [markAreas, setMarkAreas] = useState<null | {
     [seriesName: string]: Array<[{ name: string; xAxis: number }, { xAxis: number }]>;
-  }>({});
+  }>(null);
 
-  const temps = useMemo(() => statsToTemps(stats), [stats]);
+  const temps = useMemo<Temps[]>(() => statsToTemps(stats), [stats]);
+  const tempKeys = useMemo<string[]>(() => Object.keys(temps[0].temps), [temps]);
 
   useEffect(() => {
     (async function () {
       console.time("calc chartData");
-      const keys = Object.keys(temps[0].temps);
 
       const chartData: ChartData = {
         time: new Array(temps.length),
-        legend: keys,
-        series: keys.map((key) => ({ name: key, type: "line", data: new Array(temps.length) })),
+        legend: tempKeys,
+        series: tempKeys.map((key) => ({ name: key, type: "line", data: new Array(temps.length) })),
       };
 
       for (let i = 0; i < temps.length; i++) {
-        keys.forEach((key, idx) => {
+        tempKeys.forEach((key, idx) => {
+          if (!temps[i].temps[key]) return;
           chartData.series[idx].data[i] = [temps[i].time, temps[i].temps[key]];
         });
       }
@@ -107,15 +108,14 @@ export default function TempGraph({ klippyLog: { stats, epoch } }: Props) {
       console.timeEnd("calc chartData");
       setChartData(chartData);
     })();
-  }, [epoch, temps]);
+  }, [temps, tempKeys]);
 
   useEffect(() => {
-    setMarkAreas({});
-
     (async function () {
       for await (const [heater, markedArea] of locateProblematicAreas(temps)) {
         setMarkAreas(
           produce((draft) => {
+            if (!draft) return { [heater]: [markedArea] };
             if (!draft[heater]) draft[heater] = [];
             draft[heater].push(markedArea);
           })
@@ -165,7 +165,7 @@ export default function TempGraph({ klippyLog: { stats, epoch } }: Props) {
             yAxis: { type: "value" },
             series: chartData.series.map((series) => ({
               ...series,
-              ...(series.name in markAreas
+              ...(markAreas && series.name in markAreas
                 ? {
                     markArea: {
                       itemStyle: { color: colors.red[500] },

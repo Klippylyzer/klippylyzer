@@ -1,4 +1,5 @@
-import React, { FormEvent, useCallback, useRef, useState } from "react";
+import produce from "immer";
+import React, { useCallback, useState } from "react";
 import { BsCheckCircle, BsSlashCircle } from "react-icons/bs";
 import cx from "ts-classnames";
 
@@ -9,11 +10,13 @@ import Modal from "./Modal";
 
 type ConnectionStatus = null | { status: "PENDING" } | { status: "SUCCESS" } | { status: "ERROR"; error: string };
 
-export default function AddPrinterModal({
+export default function AddEditPrinterModal({
+  printer,
   showModal,
   hideModal,
   onSave,
 }: {
+  printer?: Printer;
   showModal: boolean;
   hideModal: () => void;
   onSave: (printer: Printer) => void;
@@ -23,17 +26,19 @@ export default function AddPrinterModal({
 
   const db = useDb();
 
-  const formRef = useRef<HTMLFormElement>(null);
-
-  const [moonrakerUrl, setMoonrakerUrl] = useState(defaultMoonrakerUrl);
-  const [apiKey, setApiKey] = useState<string>("");
+  const [printerState, setPrinterState] = useState<Omit<Printer, "id">>({
+    name: printer?.name ?? "My Printer",
+    url: printer?.url ?? defaultMoonrakerUrl,
+    apikey: printer?.apikey ?? null,
+  });
   const [connectionStatus, setConnectionSuccessful] = useState<ConnectionStatus>(null);
 
   const testConnection = useCallback(async () => {
     setConnectionSuccessful({ status: "PENDING" });
+    const { url, apikey } = printerState;
     try {
-      const resp = await fetch(new URL("/printer/info", moonrakerUrl).toString(), {
-        headers: apiKey.trim().length > 0 ? { "X-API-KEY": apiKey } : undefined,
+      const resp = await fetch(new URL("/printer/info", url).toString(), {
+        headers: apikey && apikey.trim().length > 0 ? { "X-API-KEY": apikey } : undefined,
       });
 
       if (resp.status != 200) {
@@ -48,22 +53,20 @@ export default function AddPrinterModal({
         setConnectionSuccessful({ status: "ERROR", error: `Unknown error: ${e}` });
       }
     }
-  }, [moonrakerUrl, apiKey, setConnectionSuccessful]);
+  }, [printerState, setConnectionSuccessful]);
 
-  const addPrinter = useCallback(
-    async (printer: Omit<Printer, "id">) => {
-      if (!db) return;
+  const addPrinter = useCallback(async () => {
+    if (!db) return;
 
-      const txn = db.transaction("printers", "readwrite");
-      const store = txn.objectStore("printers");
+    const txn = db.transaction("printers", "readwrite");
+    const store = txn.objectStore("printers");
 
-      const id = await store.add(printer);
+    const id = await (printer ? store.put({ id: printer.id, ...printerState }) : store.add(printerState));
 
-      onSave({ id, ...printer });
-      hideModal();
-    },
-    [db, hideModal, onSave]
-  );
+    onSave({ id, ...printerState });
+    setPrinterState({ name: "My Printer", apikey: "", url: defaultMoonrakerUrl });
+    hideModal();
+  }, [db, printer, printerState, setPrinterState, defaultMoonrakerUrl, hideModal, onSave]);
 
   return (
     <Modal
@@ -71,116 +74,83 @@ export default function AddPrinterModal({
       show={showModal}
       onClose={() => {
         hideModal();
-        setMoonrakerUrl(defaultMoonrakerUrl);
-        setApiKey("");
-        formRef.current?.reset();
+        setPrinterState({ name: "My Printer", apikey: "", url: defaultMoonrakerUrl });
       }}
     >
-      <form
-        ref={formRef}
-        onSubmit={(evt: FormEvent) => {
-          evt.preventDefault();
+      <Modal.Content>
+        <Modal.Header>
+          <Modal.Title>{printer ? `Edit ${printer.name}` : `Add a Printer`}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className={cx("form-control")}>
+            <label htmlFor="name" className={cx("label")}>
+              <span className={cx("label-text")}>Printer Name</span>
+            </label>
+            <input
+              type="text"
+              name="name"
+              className={cx("input", "input-bordered")}
+              required
+              placeholder="My Printer"
+              value={printerState.name}
+              onChange={(evt) =>
+                setPrinterState(
+                  produce((draft) => {
+                    draft.name = evt.target.value;
+                  })
+                )
+              }
+            />
+          </div>
 
-          const formData = new FormData(evt.target as HTMLFormElement);
-          const printer = Object.fromEntries(formData.entries()) as Omit<Printer, "id">;
+          <div className={cx("form-control")}>
+            <label htmlFor="url" className={cx("label")}>
+              <span className={cx("label-text")}>Printer URL</span>
+            </label>
 
-          addPrinter(printer)
-            .then(() => {
-              hideModal();
-              (evt.target as HTMLFormElement).reset();
-            })
-            .catch((e) => {
-              console.error(e, formData, evt.target, printer);
-              alert(e.toString());
-            });
-        }}
-      >
-        <Modal.Content>
-          <Modal.Header>
-            <Modal.Title>Add a Printer</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div>
-              <label htmlFor="name" className={cx("block")}>
-                Printer Name
-              </label>
-              <input
-                type="text"
-                name="name"
+            <input
+              type="url"
+              name="url"
+              className={cx("input", "input-bordered")}
+              required
+              value={printerState.url}
+              onChange={(evt) =>
+                setPrinterState(
+                  produce((draft) => {
+                    draft.url = evt.target.value;
+                  })
+                )
+              }
+            />
+            <label htmlFor="url" className="label"></label>
+            <span className={cx("label-text-alt" /*, "text-gray-600", "dark:text-gray-400"*/)}>
+              You must add{" "}
+              <code
                 className={cx(
-                  "block",
-                  "w-full",
-                  "bg-base-100",
-                  "border",
-                  "rounded-sm",
-                  "border-gray-200",
+                  "bg-gray-100",
+                  "dark:bg-gray-900",
 
-                  "text-gray-900",
-                  "dark:bg-gray-800",
-                  "dark:text-gray-200",
-                  "dark:border-gray-100"
+                  "p-0.5",
+                  "-m-0.5"
                 )}
-                required
-                defaultValue="My Printer"
-                placeholder="My Printer"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="url" className={cx("block")}>
-                Printer URL
-              </label>
-              <input
-                type="url"
-                name="url"
+              >
+                {currentUrl.hostname}
+              </code>{" "}
+              as a CORS domain in your{" "}
+              <code
                 className={cx(
-                  "block",
-                  "w-full",
-                  "bg-base-100",
-                  "border",
-                  "rounded-sm",
-                  "border-gray-200",
-                  "text-gray-900",
-                  "dark:bg-gray-800",
-                  "dark:text-gray-200",
-                  "dark:border-gray-100"
+                  "bg-gray-100",
+                  "dark:bg-gray-900",
+
+                  "p-0.5",
+                  "-m-0.5"
                 )}
-                required
-                value={moonrakerUrl}
-                onChange={(evt) => setMoonrakerUrl(evt.target.value)}
-              />
-              <span className={cx("block", "text-gray-600", "dark:text-gray-400")}>
-                You must add{" "}
-                <code
-                  className={cx(
-                    "border",
-                    "border-gray-200",
-                    "bg-gray-100",
-                    "dark:bg-gray-900",
-                    "border-gray-800",
-                    "p-0.5",
-                    "-m-0.5"
-                  )}
-                >
-                  {currentUrl.hostname}
-                </code>{" "}
-                as a CORS domain in your{" "}
-                <code
-                  className={cx(
-                    "border",
-                    "border-gray-200",
-                    "bg-gray-100",
-                    "dark:bg-gray-900",
-                    "border-gray-800",
-                    "p-0.5",
-                    "-m-0.5"
-                  )}
-                >
-                  moonraker.conf
-                </code>
-                .
-              </span>
-              {/* {currentUrl.protocol != new URL(printerUrl).protocol && (
+              >
+                moonraker.conf
+              </code>
+              .
+            </span>
+            {/* {currentUrl.protocol != new URL(printerUrl).protocol && (
                 <span
                   className={cx("block", "text-gray-600", "dark:text-gray-400")}
                 >
@@ -189,66 +159,61 @@ export default function AddPrinterModal({
                   as well
                 </span>
               )} */}
-            </div>
+          </div>
 
-            <div>
-              <label htmlFor="apikey" className={cx("block")}>
-                Printer API Key
-              </label>
-              <input
-                type="text"
-                name="apikey"
-                className={cx(
-                  "block",
-                  "w-full",
-                  "bg-base-100",
-                  "border",
-                  "rounded-sm",
-                  "border-gray-200",
-
-                  "text-gray-900",
-                  "dark:bg-gray-800",
-                  "dark:text-gray-200",
-                  "dark:border-gray-100"
-                )}
-                placeholder="API Key"
-                value={apiKey}
-                onChange={(evt) => setApiKey(evt.target.value)}
-              />
-              <span className={cx("text-gray-600", "dark:text-gray-400")}>
-                You can get this by checking http://myprinter.local/
+          <div className={cx("form-control")}>
+            <label htmlFor="apikey" className={cx("label")}>
+              <span className="label-text">Printer API Key</span>
+            </label>
+            <input
+              type="text"
+              name="apikey"
+              className={cx("input", "input-bordered")}
+              placeholder="API Key"
+              value={printerState.apikey || ""}
+              onChange={(evt) =>
+                setPrinterState(
+                  produce((draft) => {
+                    draft.apikey = evt.target.value.length > 0 ? evt.target.value : null;
+                  })
+                )
+              }
+            />
+            <label htmlFor="apikey">
+              <span className={cx("label-text-alt")}>
+                You can get this from{" "}
+                <a href={`${printerState.url}/access/api_key`} target="_blank">
+                  {printerState.url}/access/api_key
+                </a>
               </span>
-            </div>
-          </Modal.Body>
-          <Modal.Footer className={cx("flex", "flex-col")}>
-            <div className={cx("w-full", "flex", "flex-row", "justify-between")}>
-              <span className={cx("flex", "flex-row", "items-center")}>
-                <Button btn="Purple" type="button" onClick={testConnection}>
-                  Test Connection
-                </Button>
-                {connectionStatus?.status === "PENDING" ? (
-                  <Spinner size="2rem" className={cx("ml-1", "fill-gray-500", "animate-spin")} />
-                ) : connectionStatus?.status === "SUCCESS" ? (
-                  <BsCheckCircle size="2rem" className={cx("pl-1", "fill-success")} />
-                ) : connectionStatus?.status === "ERROR" ? (
-                  <BsSlashCircle size="2rem" className={cx("pl-1", "fill-red-500")} />
-                ) : null}
-              </span>
-
-              <Button
-                type="submit"
-                disabled={!(connectionStatus?.status === "SUCCESS" && formRef.current?.checkValidity())}
-              >
-                Add Printer
+            </label>
+          </div>
+        </Modal.Body>
+        <Modal.Footer className={cx("flex", "flex-col")}>
+          <div className={cx("w-full", "flex", "flex-row", "justify-between")}>
+            <span className={cx("flex", "flex-row", "items-center")}>
+              <Button btn="Purple" type="button" onClick={testConnection}>
+                Test Connection
               </Button>
-            </div>
+              {connectionStatus?.status === "PENDING" ? (
+                <Spinner size="2rem" className={cx("ml-1", "fill-gray-500", "animate-spin")} />
+              ) : connectionStatus?.status === "SUCCESS" ? (
+                <BsCheckCircle size="2rem" className={cx("pl-1", "fill-success")} />
+              ) : connectionStatus?.status === "ERROR" ? (
+                <BsSlashCircle size="2rem" className={cx("pl-1", "fill-red-500")} />
+              ) : null}
+            </span>
 
-            {connectionStatus?.status === "ERROR" && (
-              <div className={cx("w-full", "text-red-500", "text-sm")}>{connectionStatus.error}</div>
-            )}
-          </Modal.Footer>
-        </Modal.Content>
-      </form>
+            <Button disabled={!(connectionStatus?.status === "SUCCESS")} onClick={() => addPrinter()}>
+              {printer ? "Save Printer" : "Add Printer"}
+            </Button>
+          </div>
+
+          {connectionStatus?.status === "ERROR" && (
+            <div className={cx("w-full", "text-red-500", "text-sm")}>{connectionStatus.error}</div>
+          )}
+        </Modal.Footer>
+      </Modal.Content>
     </Modal>
   );
 }

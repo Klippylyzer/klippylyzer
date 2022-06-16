@@ -1,6 +1,7 @@
 import { ClientRPCMethods, ServerRPCMethods } from "../utils/jsonrpc";
 import {
   BedMeshStatus,
+  GCodeMove,
   MachineSystemInfo,
   MoonrakerAnnouncement,
   MoonrakerExcludeObjectStatus,
@@ -10,6 +11,7 @@ import {
   MoonrakerProcStats,
   MoonrakerServerInfo,
   MoonrakerUpdateStatus,
+  MotionReport,
   Toolhead,
 } from "./moonraker";
 
@@ -31,12 +33,7 @@ export interface MoonrakerServerRPC extends ServerRPCMethods {
   ];
   "printer.info": [never, MoonrakerPrinterInfo];
 
-  // TODO: Figure out typing the objects
-  "printer.objects.list": [
-    { objects: { [object_name: string]: null | Array<string> } },
-    { [object_name: string]: { [key: string]: unknown } }
-  ];
-
+  "printer.objects.list": [{ objects: { [object_name: string]: null | Array<string> } }, { objects: string[] }];
   "printer.objects.query": [
     { objects: { [object_name: string]: null | Array<string> } },
     { toolhead?: Toolhead; bed_mesh?: BedMeshStatus; [object_name: string]: unknown }
@@ -46,7 +43,13 @@ export interface MoonrakerServerRPC extends ServerRPCMethods {
     { objects?: { [object_name: string]: null | string[] } },
     {
       eventtime: number;
-      status: { toolhead?: Toolhead; bed_mesh?: BedMeshStatus; [key: string]: unknown };
+      status: {
+        toolhead?: Toolhead;
+        bed_mesh?: BedMeshStatus;
+        gcode_move?: GCodeMove;
+        motion_report?: MotionReport;
+        [key: string]: unknown;
+      };
     }
   ];
   "printer.query_endstops.status": [never, { [key: string]: "open" | "TRIGGERED" }];
@@ -209,6 +212,8 @@ export interface MoonrakerClientRPC extends ClientRPCMethods {
       toolhead?: Partial<Toolhead>;
       exclude_object?: Partial<MoonrakerExcludeObjectStatus>;
       bed_mesh?: Partial<BedMeshStatus>;
+      gcode_move?: Partial<GCodeMove>;
+      motion_report?: Partial<MotionReport>;
     },
     number
   ];

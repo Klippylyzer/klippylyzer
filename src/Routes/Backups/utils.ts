@@ -1,5 +1,27 @@
+import * as zip from "@zip.js/zip.js";
+
 import { Backup, KlippylyzerDatabase } from "../../Context/Database";
 import { MoonrakerContext } from "../../Context/Moonraker";
+
+export async function zipBackup(db: KlippylyzerDatabase, backup: Backup): Promise<Blob> {
+  const backupFileIds = backup.files.map((file) => file.id);
+  const blobWriter = new zip.BlobWriter();
+  const zipWriter = new zip.ZipWriter(blobWriter);
+
+  const backupFiles = await db.getAll(
+    "backupFile",
+    IDBKeyRange.bound(Math.min(...backupFileIds), Math.max(...backupFileIds))
+  );
+  for (const backupFile of backupFiles) {
+    if (backupFileIds.includes(backupFile.id || -1)) {
+      await zipWriter.add(backupFile.path, new zip.Uint8ArrayReader(new Uint8Array(backupFile.contents)));
+    }
+  }
+
+  await zipWriter.close();
+
+  return blobWriter.getData();
+}
 
 export async function createBackup(
   db: KlippylyzerDatabase,

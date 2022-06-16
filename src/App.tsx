@@ -10,6 +10,7 @@ import Drawer from "./Components/Drawer";
 import useMoonraker from "./Context/Moonraker";
 import KlippyLogRoutes from "./Routes/KlippyLog/Routes";
 import MoonrakerRoutes from "./Routes/Moonraker/Routes";
+import Settings from "./Routes/Settings";
 import { KlippyLog } from "./types";
 import { humanSize, parseKlippyLog } from "./utils";
 
@@ -32,7 +33,7 @@ export default function App() {
   }, [moonraker.printer]);
 
   return (
-    <div className={cx("flex", "flex-col", "h-screen", "p-4")}>
+    <>
       <Helmet
         htmlAttributes={{
           class: cx("bg-gray-50", "text-gray-800", "dark:bg-gray-900", "dark:text-gray-200"),
@@ -96,13 +97,19 @@ export default function App() {
                     </li>
                   </>
                 )}
+                <li>
+                  <NavLink to="/settings">
+                    <BsGear className={cx("mr-2")} />
+                    Settings
+                  </NavLink>
+                </li>
               </>
             </Drawer>
           }
         >
           {MoonrakerRoutes(moonraker)}
           {KlippyLogRoutes({ klippyLog, setKlippyLog })}
-
+          <Route path="settings" element={<Settings />} />
           <Route path="*" element={<section>404 not found</section>} />
         </Route>
       </Routes>
@@ -184,6 +191,6 @@ export default function App() {
           </div>
         )}
       </Toaster>
-    </div>
+    </>
   );
 }
