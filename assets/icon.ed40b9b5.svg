@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="48"
+   height="48"
+   viewBox="0 0 12.7 12.7"
+   version="1.1"
+   id="svg5"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs2" />
+  <g
+     id="layer1">
+    <g
+       style="clip-rule:evenodd;fill-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421"
+       id="g72"
+       transform="matrix(0.01299522,0,0,0.01299522,1.9488683,3.0388873)">
+      <circle
+         cx="403.07031"
+         cy="185.02278"
+         r="365.75458"
+         stroke-width="10"
+         id="circle92-7"
+         style="clip-rule:evenodd;fill-rule:evenodd;stroke:#ffffff;stroke-width:230.854;stroke-linejoin:round;stroke-miterlimit:1.41421;stroke-dasharray:none;stroke-opacity:0.792541" />
+      <circle
+         cx="404.70651"
+         cy="189.9314"
+         r="365.75458"
+         stroke-width="98.8526"
+         id="circle92-6"
+         style="clip-rule:evenodd;fill:#ffffff;fill-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421" />
+      <path
+         style="fill:#3c4b5a;stroke-width:1.15661"
+         d="M 2.1844592,-26.866949 V 135.05825 L 302.90268,429.99342 435.91266,424.21037 h 92.52868 L 811.81042,135.05825 V -26.866949 H 800.24433 L 412.78049,366.37995 13.750544,-26.866949 Z"
+         id="path2" />
+      <path
+         d="M 267.04781,424.21037 H 383.86527 V 349.03082 L 2.1844592,-26.866949 H 71.58097 L 412.78049,308.54952 742.41391,-26.866949 h 69.39651 L 441.6957,349.03082 v 98.30922 c 0,5.78555 -5.78304,11.56859 -11.56609,11.56859 h -163.0818 c -13.8793,0 -16.19252,-11.56609 -16.19252,-17.34913 0,-5.78304 2.31322,-17.34913 16.19252,-17.34913 z"
+         style="fill:#b12f35;stroke-width:1.15661"
+         id="path35" />
+      <g
+         fill="none"
+         stroke="#000000"
+         stroke-linecap="round"
+         id="g94"
+         transform="matrix(9.8852587,0,0,9.8852587,-237.0532,-226.03157)">
+        <path
+           d="M 35,72 5,102"
+           stroke-width="10"
+           id="path90-7"
+           style="clip-rule:evenodd;fill-rule:evenodd;stroke:#ffffff;stroke-linejoin:round;stroke-miterlimit:1.41420996;stroke-opacity:0.79254079;stroke-width:23.35337103;stroke-dasharray:none" />
+        <path
+           d="M 35,72 5,102"
+           stroke-width="10"
+           id="path90"
+           style="stroke:#000000;stroke-opacity:1" />
+        <circle
+           cx="65"
+           cy="42"
+           r="37"
+           stroke-width="10"
+           id="circle92" />
+      </g>
+    </g>
+  </g>
+</svg>
