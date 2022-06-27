@@ -6,7 +6,7 @@
     "lint:js": "eslint src",
     "lint:ts": "tsc --noEmit",
     "lint:css": "stylelint src/**/*.css src/**/*.scss",
-    "format":"prettier --write src"
+    "format": "prettier --write src"
   },
   "pre-commit": [
     "lint:js",
@@ -39,10 +39,12 @@
     "react-syntax-highlighter-virtualized-renderer": "^1.1.0",
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.7",
+    "remove": "^0.1.5",
     "ts-classnames": "^0.1.1",
     "use-immer": "^0.7.0"
   },
   "devDependencies": {
+    "@types/node": "^18.0.0",
     "@types/prop-types": "^15.7.5",
     "@types/react-dom": "^18.0.5",
     "@types/react-syntax-highlighter": "^15.5.1",
@@ -78,15 +80,6 @@
     "not dead",
     "not op_mini all"
   ],
-  "postcss": {
-    "plugins": {
-      "tailwindcss": {},
-      "postcss-ts-classnames": {
-        "isModule": false,
-        "exportAsDefault": false
-      }
-    }
-  },
   "stylelint": {
     "extends": [
       "stylelint-config-standard",

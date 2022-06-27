@@ -13,8 +13,6 @@ import { KlippyLogProvider } from "./Context/KlippyLog";
 import { MoonrakerProvider } from "./Context/Moonraker";
 import { WebWorkerProvider } from "./Context/WebWorker";
 
-const rootUrl = new URL(document.location.href);
-
 const reactRoot = createRoot(document.getElementById("app") as HTMLDivElement);
 reactRoot.render(
   <WebWorkerProvider>
@@ -23,7 +21,7 @@ reactRoot.render(
         <KlippyLogProvider>
           <AlertProvider>
             <HelmetProvider>
-              <BrowserRouter basename={rootUrl.host.endsWith(".github.io") ? "/klippylyzer" : undefined}>
+              <BrowserRouter basename={"/klippylyzer"}>
                 <App />
               </BrowserRouter>
             </HelmetProvider>
