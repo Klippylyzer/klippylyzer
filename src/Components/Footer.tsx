@@ -1,10 +1,7 @@
 import * as React from "react";
 import cx from "ts-classnames";
 
-export default function Footer({
-  className,
-  children,
-}: React.PropsWithChildren<{ className: string }>) {
+export default function Footer({ className, children }: React.PropsWithChildren<{ className: string }>) {
   return (
     <footer
       className={cx(

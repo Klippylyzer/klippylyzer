@@ -5,7 +5,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import cx from "ts-classnames";
 
 import Modal from "../../Components/Modal";
-import useDb, { Backup } from "../../Context/Database";
+import useDb, { Backup as BackupType } from "../../Context/Database";
 import useMoonraker from "../../Context/Moonraker";
 import { createBackup, zipBackup } from "./utils";
 
@@ -21,7 +21,7 @@ export default function Backups() {
   const moonraker = useMoonraker();
   const navigate = useNavigate();
 
-  const [backups, setBackups] = useState<Backup[]>([]);
+  const [backups, setBackups] = useState<BackupType[]>([]);
   const [activeBackup, setActiveBackup] = useState<BackupState>({
     running: false,
     log: [],
@@ -30,11 +30,11 @@ export default function Backups() {
   });
 
   useEffect(() => {
-    db.getAll("backup").then((values) => setBackups(values as Backup[]));
+    db.getAll("backup").then((values) => setBackups(values as BackupType[]));
   }, [db, setBackups]);
 
   const downloadBackup = useCallback(
-    async (backup: Backup) => {
+    async (backup: BackupType) => {
       const zipFileBlob = await zipBackup(db, backup);
       const zipFileBlobUrl = URL.createObjectURL(await zipFileBlob);
       const zipFileBlobLink = document.createElement("a");

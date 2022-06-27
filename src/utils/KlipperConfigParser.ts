@@ -12,9 +12,7 @@ export default class KlipperConfigParser {
 
     for (const line of text.split("\n")) {
       if (line.startsWith("[")) {
-        current_section_path = line
-          .slice(line.indexOf("[") + 1, line.lastIndexOf("]"))
-          .split(" ");
+        current_section_path = line.slice(line.indexOf("[") + 1, line.lastIndexOf("]")).split(" ");
 
         // Populate
         current_section = config;

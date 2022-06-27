@@ -1,7 +1,9 @@
 import { ClientRPCMethods, ServerRPCMethods } from "../utils/jsonrpc";
 import {
   BedMeshStatus,
-  GCodeMove,
+  DockableProbeStatus,
+  ExtruderStatus,
+  GCodeMoveStatus,
   MachineSystemInfo,
   MoonrakerAnnouncement,
   MoonrakerExcludeObjectStatus,
@@ -11,8 +13,10 @@ import {
   MoonrakerProcStats,
   MoonrakerServerInfo,
   MoonrakerUpdateStatus,
-  MotionReport,
-  Toolhead,
+  MotionReportStatus,
+  ProbeStatus,
+  ToolheadStatus as ToolheadStatus,
+  ZCalibrationStatus,
 } from "./moonraker";
 
 export type MoonrakerClientType = "web" | "mobile" | "desktop" | "display" | "bot" | "agent" | "other";
@@ -36,7 +40,7 @@ export interface MoonrakerServerRPC extends ServerRPCMethods {
   "printer.objects.list": [{ objects: { [object_name: string]: null | Array<string> } }, { objects: string[] }];
   "printer.objects.query": [
     { objects: { [object_name: string]: null | Array<string> } },
-    { toolhead?: Toolhead; bed_mesh?: BedMeshStatus; [object_name: string]: unknown }
+    { toolhead?: ToolheadStatus; bed_mesh?: BedMeshStatus; [object_name: string]: unknown }
   ];
 
   "printer.objects.subscribe": [
@@ -44,10 +48,15 @@ export interface MoonrakerServerRPC extends ServerRPCMethods {
     {
       eventtime: number;
       status: {
-        toolhead?: Toolhead;
+        toolhead?: ToolheadStatus;
+        exclude_object?: MoonrakerExcludeObjectStatus;
         bed_mesh?: BedMeshStatus;
-        gcode_move?: GCodeMove;
-        motion_report?: MotionReport;
+        gcode_move?: GCodeMoveStatus;
+        motion_report?: MotionReportStatus;
+        probe?: ProbeStatus;
+        dockable_probe?: DockableProbeStatus;
+        extruder?: ExtruderStatus;
+        z_calibration?: ZCalibrationStatus;
         [key: string]: unknown;
       };
     }
@@ -209,11 +218,15 @@ export interface MoonrakerClientRPC extends ClientRPCMethods {
   notify_proc_stat_update: [MoonrakerProcStats];
   notify_status_update: [
     {
-      toolhead?: Partial<Toolhead>;
+      toolhead?: Partial<ToolheadStatus>;
       exclude_object?: Partial<MoonrakerExcludeObjectStatus>;
       bed_mesh?: Partial<BedMeshStatus>;
-      gcode_move?: Partial<GCodeMove>;
-      motion_report?: Partial<MotionReport>;
+      gcode_move?: Partial<GCodeMoveStatus>;
+      motion_report?: Partial<MotionReportStatus>;
+      probe?: Partial<ProbeStatus>;
+      dockable_probe?: Partial<DockableProbeStatus>;
+      extruder?: Partial<ExtruderStatus>;
+      z_calibration?: Partial<ZCalibrationStatus>;
     },
     number
   ];

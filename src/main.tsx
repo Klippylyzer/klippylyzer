@@ -1,5 +1,7 @@
 import "./main.css";
 
+import { enableMapSet } from "immer";
+enableMapSet();
 import { createRoot } from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter } from "react-router-dom";

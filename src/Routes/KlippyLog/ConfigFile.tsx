@@ -9,7 +9,7 @@ import KlipperConfigParser, { ConfigFile, Section } from "../../utils/KlipperCon
 type Props = {
   klippyLog: KlippyLog;
 };
-export default function ConfigFile({ klippyLog }: Props) {
+export default function ConfigFileViewer({ klippyLog }: Props) {
   const config = useMemo(() => {
     const parser = new KlipperConfigParser();
     try {

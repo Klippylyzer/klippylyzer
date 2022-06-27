@@ -6,7 +6,7 @@ import PrismLanguageIni from "react-syntax-highlighter/dist/esm/languages/prism/
 import PrismThemeTomorrow from "react-syntax-highlighter/dist/esm/styles/prism/tomorrow";
 import cx from "ts-classnames";
 
-import useDb, { Backup, BackupFile } from "../../Context/Database";
+import useDb, { Backup as BackupType, BackupFile as BackupFileType } from "../../Context/Database";
 
 PrismLight.registerLanguage("ini", PrismLanguageIni);
 
@@ -14,8 +14,8 @@ export default function BackupFile() {
   const { backupId, "*": filePath } = useParams<{ backupId: string; "*": string }>();
 
   const db = useDb();
-  const [backup, setBackup] = useState<undefined | Backup>(undefined);
-  const [backupFile, setBackupFile] = useState<undefined | BackupFile>(undefined);
+  const [backup, setBackup] = useState<undefined | BackupType>(undefined);
+  const [backupFile, setBackupFile] = useState<undefined | BackupFileType>(undefined);
 
   useEffect(() => {
     if (!(backupId && filePath)) return;
@@ -23,12 +23,12 @@ export default function BackupFile() {
     db.get("backup", parseInt(backupId)).then((backup) => {
       if (!backup) return;
 
-      setBackup(backup as Backup);
+      setBackup(backup as BackupType);
 
       const fileId = backup.files.find(({ name }) => name === filePath)?.id;
       if (!fileId) return;
       db.get("backupFile", fileId).then((file) => {
-        setBackupFile(file as BackupFile);
+        setBackupFile(file as BackupFileType);
       });
     });
   }, [db, backupId, filePath]);

@@ -1,8 +1,5 @@
 {
-    "compilerOptions": {
-        "lib": [
-            "esnext",
-            "WebWorker"
-        ]
-    }
+  "compilerOptions": {
+    "lib": ["esnext", "WebWorker"]
+  }
 }

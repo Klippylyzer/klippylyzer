@@ -5,7 +5,6 @@ export type Stats = {
 };
 
 export type KlippyLog = {
-  epoch: number;
   raw: string;
   config: string;
   stats: Stats[];

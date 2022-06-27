@@ -1,8 +1,4 @@
-import {
-  KlippyLog,
-  KlippyWorkerMessages,
-  KlippyWorkerRequests,
-} from "../types";
+import { KlippyLog, KlippyWorkerMessages, KlippyWorkerRequests } from "../types";
 import { parseKlippyLog } from "../utils";
 
 async function parseFiles(files: FileList): Promise<KlippyLog> {
@@ -23,9 +19,7 @@ async function parseFiles(files: FileList): Promise<KlippyLog> {
   return parseKlippyLog(fileContents);
 }
 
-async function handleMessage(
-  message: KlippyWorkerRequests
-): Promise<null | KlippyWorkerMessages> {
+async function handleMessage(message: KlippyWorkerRequests): Promise<null | KlippyWorkerMessages> {
   switch (message.type) {
     case "parseFiles":
       return {
@@ -36,8 +30,6 @@ async function handleMessage(
 }
 
 globalThis.postMessage({ type: "ready" });
-globalThis.addEventListener(
-  "message",
-  (e: MessageEvent<KlippyWorkerRequests>) =>
-    handleMessage(e.data).then((r) => r && globalThis.postMessage(r))
+globalThis.addEventListener("message", (e: MessageEvent<KlippyWorkerRequests>) =>
+  handleMessage(e.data).then((r) => r && globalThis.postMessage(r))
 );

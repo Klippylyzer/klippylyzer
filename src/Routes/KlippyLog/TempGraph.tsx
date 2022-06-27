@@ -78,7 +78,7 @@ type ChartData = {
   series: Array<{ name: string; type: "line"; data: [number, number][] }>;
 };
 
-export default function TempGraph({ klippyLog: { stats, epoch } }: Props) {
+export default function TempGraph({ klippyLog: { stats } }: Props) {
   const chart = useRef<ECharts>(null);
   const [chartData, setChartData] = useState<null | ChartData>(null);
   const [markAreas, setMarkAreas] = useState<null | {
@@ -157,7 +157,7 @@ export default function TempGraph({ klippyLog: { stats, epoch } }: Props) {
               type: "category",
               axisLabel: {
                 formatter(v: string) {
-                  return new Date((parseFloat(v) + epoch) * 1000).toLocaleTimeString();
+                  return new Date(parseFloat(v) * 1000).toLocaleTimeString();
                 },
               },
               // data: chartData.time
@@ -231,7 +231,7 @@ export default function TempGraph({ klippyLog: { stats, epoch } }: Props) {
                   </tr>
                   {markedAreas.map(([start]) => (
                     <tr key={start.xAxis}>
-                      <td>{new Date((epoch + start.xAxis) * 1000).toLocaleTimeString()}</td>
+                      <td>{new Date(start.xAxis * 1000).toLocaleTimeString()}</td>
                       <td>{start.name}</td>
                     </tr>
                   ))}

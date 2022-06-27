@@ -1,6 +1,6 @@
 import { KlippyLog, Stats, Temps } from "../types";
 
-function parseKlippyLine(line: string): Stats {
+function parseKlippyLine(line: string, epoch: number): Stats {
   /*
        Parses lines similar to 
          Stats 181891.6: gcodein=0 mcu: mcu_awake=0.014 mcu_task_avg=0.000022 mcu_task_stddev=0.000029 bytes_write=3313562 bytes_read=1126126 bytes_retransmit=0 bytes_invalid=0 send_seq=77515 receive_seq=77514 retransmit_seq=0 srtt=0.000 rttvar=0.000 rto=0.025 ready_bytes=30 stalled_bytes=3326 freq=180003476 rpi: mcu_awake=0.000 mcu_task_avg=0.000008 mcu_task_stddev=0.000012 bytes_write=10147 bytes_read=33138 bytes_retransmit=0 bytes_invalid=0 send_seq=1666 receive_seq=1666 retransmit_seq=0 srtt=0.000 rttvar=0.000 rto=0.025 ready_bytes=0 stalled_bytes=0 freq=49999586 adj=49998638 sd_pos=264628 heater_bed: target=60 temp=60.1 pwm=0.127 chamber: temp=27.9 mcu: temp=31.3 raspberry_pi: temp=44.0 sysload=1.40 cputime=269.122 memavail=552400 print_time=1561.763 buffer_time=2.417 print_stall=0 extruder: target=220 temp=225.8 pwm=0.000
@@ -20,7 +20,7 @@ function parseKlippyLine(line: string): Stats {
 
   const [, time, ...parts] = line.split(" ");
   const stats: Stats = {
-    time: parseFloat(time.slice(0, time.length - 1)),
+    time: parseFloat(time.slice(0, time.length - 1)) + epoch,
     values: { klippy: {} },
   };
 
@@ -55,14 +55,20 @@ function extractEpoch(log: string): number {
 }
 
 export function parseKlippyLog(raw: string): KlippyLog {
+  let epoch = extractEpoch(raw);
   return {
     raw,
     config: extractLastConfig(raw),
-    epoch: extractEpoch(raw),
-    stats: raw
-      .split("\n")
-      .filter((line) => line.startsWith("Stats "))
-      .map(parseKlippyLine),
+    stats: raw.split("\n").reduce((stats, line) => {
+      if (line.startsWith("Start printer at ")) {
+        epoch = extractEpoch(line);
+        console.log("new epoch ", epoch);
+      } else if (line.startsWith("Stats ")) {
+        stats.push(parseKlippyLine(line, epoch));
+      }
+
+      return stats;
+    }, [] as Stats[]),
   };
 }
 

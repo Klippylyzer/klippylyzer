@@ -22,14 +22,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   onClose?: () => void;
 }
 
-export default function Modal({
-  size = "md",
-  show = false,
-  className,
-  onClose,
-  children,
-  ...props
-}: Props) {
+export default function Modal({ size = "md", show = false, className, onClose, children, ...props }: Props) {
   return createPortal(
     <ModalContext.Provider value={{ onClose }}>
       <div

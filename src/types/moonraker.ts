@@ -39,7 +39,7 @@ export interface ZCalibrationStatus {
   last_z_offset: number;
 }
 
-export interface GCodeMove {
+export interface GCodeMoveStatus {
   speed_factor: number;
   speed: number;
   extrude_factor: number;
@@ -50,7 +50,11 @@ export interface GCodeMove {
   gcode_position: PositionTuple;
 }
 
-export interface MotionReport {
+export interface DockableProbeStatus {
+  last_time: number;
+  last_state: "ATTACHED" | "DOCKED" | "UNKNOWN";
+}
+export interface MotionReportStatus {
   live_position: PositionTuple;
   live_velocity: number;
   live_extruder_velocity: number;
@@ -58,7 +62,7 @@ export interface MotionReport {
   trapq: string[];
 }
 
-export interface Toolhead {
+export interface ToolheadStatus {
   homed_axes: "" | "x" | "y" | "z" | "xy" | "xz" | "yz" | "xyz";
   axis_minimum: PositionTuple;
   axis_maximum: PositionTuple;
@@ -73,7 +77,7 @@ export interface Toolhead {
   square_corner_velocity: number;
 }
 
-export interface Extruder {
+export interface ExtruderStatus {
   temperature: number;
   target: number;
   power: number;

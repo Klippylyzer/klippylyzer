@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { toast, Toaster } from "react-hot-toast";
-import { BsClockHistory, BsFileLock, BsFileText, BsFillCpuFill, BsGear, BsThermometerHalf, BsX } from "react-icons/bs";
+import { BsClockHistory, BsFileLock, BsFileText, BsGear, BsThermometerHalf, BsX } from "react-icons/bs";
 import { TbGridDots } from "react-icons/tb";
 import { NavLink, Route, Routes } from "react-router-dom";
 import cx from "ts-classnames";
@@ -87,12 +87,6 @@ export default function App() {
                       <NavLink to="/analysis/log">
                         <BsFileText className={cx("mr-2")} />
                         Log
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink to="/analysis/stats">
-                        <BsFillCpuFill className={cx("mr-2")} />
-                        Stats
                       </NavLink>
                     </li>
                   </>

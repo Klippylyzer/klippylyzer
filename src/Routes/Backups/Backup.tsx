@@ -2,21 +2,21 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet, useParams } from "react-router-dom";
 import cx from "ts-classnames";
 
-import useDb, { Backup, BackupFile } from "../../Context/Database";
+import useDb, { Backup as BackupType, BackupFile as BackupFileType } from "../../Context/Database";
 import { humanSize } from "../../utils";
 
 export default function Backup() {
   const { backupId } = useParams<{ backupId: string }>();
   const db = useDb();
 
-  const [backup, setBackup] = useState<undefined | Backup>();
-  const [backupFiles, setBackupFiles] = useState<Array<BackupFile>>([]);
+  const [backup, setBackup] = useState<undefined | BackupType>();
+  const [backupFiles, setBackupFiles] = useState<Array<BackupFileType>>([]);
 
   useEffect(
     function () {
       if (!backupId) return undefined;
 
-      db.get("backup", parseInt(backupId)).then((backup) => setBackup(backup as Backup));
+      db.get("backup", parseInt(backupId)).then((backup) => setBackup(backup as BackupType));
     },
     [backupId, db]
   );
@@ -35,7 +35,7 @@ export default function Backup() {
         setBackupFiles(
           files.filter(
             (backupFile) => backup.files.map(({ id }) => id).indexOf(backupFile.id as number) !== -1
-          ) as Array<BackupFile>
+          ) as Array<BackupFileType>
         )
       );
     },
