@@ -18,10 +18,10 @@ import produce from "immer";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Fragment } from "react";
 import colors from "tailwindcss/colors";
-import cx from "ts-classnames";
 
 import { KlippyLog, Temps } from "../../types";
 import { statsToTemps } from "../../utils";
+import cx from "../../utils/cx";
 
 echarts.use([
   LineChart,

@@ -1,10 +1,11 @@
+import "./main.css";
+
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { toast, Toaster } from "react-hot-toast";
 import { BsClockHistory, BsFileLock, BsFileText, BsGear, BsThermometerHalf, BsX } from "react-icons/bs";
 import { TbGridDots } from "react-icons/tb";
 import { NavLink, Route, Routes } from "react-router-dom";
-import cx from "ts-classnames";
 
 import Drawer from "./Components/Drawer";
 import useMoonraker from "./Context/Moonraker";
@@ -13,6 +14,7 @@ import MoonrakerRoutes from "./Routes/Moonraker/Routes";
 import Settings from "./Routes/Settings";
 import { KlippyLog } from "./types";
 import { humanSize, parseKlippyLog } from "./utils";
+import cx from "./utils/cx";
 
 export default function App() {
   const [klippyLog, setKlippyLog] = useState<KlippyLog>();
@@ -34,11 +36,7 @@ export default function App() {
 
   return (
     <>
-      <Helmet
-        htmlAttributes={{
-          class: cx("bg-gray-50", "text-gray-800", "dark:bg-gray-900", "dark:text-gray-200"),
-        }}
-      >
+      <Helmet>
         <meta charSet="utf-8" />
         <title>Klippylyzer</title>
       </Helmet>

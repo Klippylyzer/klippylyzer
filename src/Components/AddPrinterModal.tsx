@@ -1,9 +1,9 @@
 import produce from "immer";
 import React, { useCallback, useState } from "react";
 import { BsCheckCircle, BsSlashCircle } from "react-icons/bs";
-import cx from "ts-classnames";
 
 import useDb, { Printer } from "../Context/Database";
+import cx from "../utils/cx";
 import { Spinner } from ".";
 import Button from "./Buttons";
 import Modal from "./Modal";

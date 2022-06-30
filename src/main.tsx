@@ -1,10 +1,9 @@
-import "./main.css";
-
 import { enableMapSet } from "immer";
-enableMapSet();
 import { createRoot } from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter } from "react-router-dom";
+
+enableMapSet();
 
 import App from "./App";
 import { AlertProvider } from "./Context/Alert";
@@ -21,7 +20,7 @@ reactRoot.render(
         <KlippyLogProvider>
           <AlertProvider>
             <HelmetProvider>
-              <BrowserRouter basename={"/klippylyzer"}>
+              <BrowserRouter basename={"/klippylyzer/"}>
                 <App />
               </BrowserRouter>
             </HelmetProvider>

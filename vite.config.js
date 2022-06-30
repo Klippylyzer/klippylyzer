@@ -1,24 +1,25 @@
 import react from "@vitejs/plugin-react";
-import fs from "fs";
-import path from "path";
+import { fileURLToPath } from "url";
 import { defineConfig } from "vite";
 
 export default defineConfig({
   root: "src",
   base: "/klippylyzer/",
+
   plugins: [
     react(),
-    {
-      name: ".nojekyll",
-      generateBundle({ dir }, _, isWrite) {
-        if (dir && isWrite) fs.writeFileSync(path.join(dir, ".nojekyll"), "");
-      },
-    },
   ],
 
   build: {
     outDir: "../gh-pages",
     emptyOutDir: true,
+    sourcemap: true,
+    rollupOptions: {
+      input: {
+        index: fileURLToPath(new URL("./src/index.html", import.meta.url)),
+        404: fileURLToPath(new URL("./src/404.html", import.meta.url)),
+      },
+    },
   },
 
   server: {

@@ -1,7 +1,7 @@
-import cx from "ts-classnames";
 
 import { KlippyLog } from "../../types";
 import { searchForAbnormalTemperatureSpikes } from "../../utils/analysis";
+import cx from "../../utils/cx";
 
 interface Props {
   klippyLog: KlippyLog;

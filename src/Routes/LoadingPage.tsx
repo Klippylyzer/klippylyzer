@@ -1,7 +1,7 @@
 import { PropsWithChildren, Suspense } from "react";
-import cx from "ts-classnames";
 
 import { Spinner } from "../Components";
+import cx from "../utils/cx";
 
 interface Props {
   message?: string;

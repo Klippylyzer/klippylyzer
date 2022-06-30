@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import cx from "ts-classnames";
 
 import useWorker from "../../Context/WebWorker";
 import { KlippyLog, KlippyWorkerMessages } from "../../types";
+import cx from "../../utils/cx";
 
 interface Props {
   onChange: (klippyLog: KlippyLog) => void;

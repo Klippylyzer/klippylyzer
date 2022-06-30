@@ -1,11 +1,11 @@
 import produce from "immer";
 import { useCallback, useEffect, useState } from "react";
 import { BsLock, BsPencil, BsPlus, BsQuestion, BsTrash } from "react-icons/bs";
-import cx from "ts-classnames";
 
 import AddPrinterModal from "../../Components/AddPrinterModal";
 import { useAlert } from "../../Context/Alert";
 import useDb, { Config, Printer } from "../../Context/Database";
+import cx from "../../utils/cx";
 
 export default function Settings() {
   const db = useDb();

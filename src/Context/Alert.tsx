@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import cx from "ts-classnames";
 
 import Modal from "../Components/Modal";
+import cx from "../utils/cx";
 import { useAnimationFrame } from "../utils/hooks";
 
 interface Alert {

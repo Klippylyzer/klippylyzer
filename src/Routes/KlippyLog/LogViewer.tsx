@@ -1,9 +1,9 @@
 import { PrismLight } from "react-syntax-highlighter";
 import PrismLanguageLog from "react-syntax-highlighter/dist/esm/languages/prism/log";
 import PrismThemeTomorrow from "react-syntax-highlighter/dist/esm/styles/prism/tomorrow";
-import cx from "ts-classnames";
 
 import { KlippyLog } from "../../types";
+import cx from "../../utils/cx";
 
 PrismLight.registerLanguage("log", PrismLanguageLog);
 

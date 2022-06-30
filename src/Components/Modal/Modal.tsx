@@ -1,7 +1,7 @@
 import { HTMLAttributes } from "react";
 import { createPortal } from "react-dom";
-import cx from "ts-classnames";
 
+import cx from "../../utils/cx";
 import ModalBody from "./ModalBody";
 import ModalContent from "./ModalContent";
 import ModalContext from "./ModalContext";

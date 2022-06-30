@@ -3,14 +3,18 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { BsPlus } from "react-icons/bs";
 import { TbPlugConnected } from "react-icons/tb";
-import cx from "ts-classnames";
 
 import useDb, { Printer } from "../Context/Database";
 import useMoonraker from "../Context/Moonraker";
+import cx, { ClassNameVariants } from "../utils/cx";
 import { Spinner } from ".";
 import AddPrinterModal from "./AddPrinterModal";
 
-export default function Header({ children }: React.PropsWithChildren<unknown>) {
+type Props = {
+  className?: ClassNameVariants;
+};
+
+export default function Header({ children, className }: React.PropsWithChildren<Props>) {
   const db = useDb();
   const moonraker = useMoonraker();
 
@@ -42,8 +46,10 @@ export default function Header({ children }: React.PropsWithChildren<unknown>) {
   }, [db]);
 
   return (
-    <nav className={cx("navbar", "bg-gray-50", "border-gray-200", "dark:bg-gray-800", "rounded-box", "mb-4")}>
-      <div className={cx("flex", "justify-end", "flex-1", "px-2")}>
+    <nav
+      className={cx("navbar", "bg-gray-50", "border-gray-200", "dark:bg-gray-800", "rounded-box", "mb-4", className)}
+    >
+      <div className={cx("flex", "justify-between", "flex-1", "px-2")}>
         {children}
 
         <div className={cx("dropdown", "dropdown-end")}>

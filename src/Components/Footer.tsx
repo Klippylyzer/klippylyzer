@@ -1,5 +1,6 @@
 import * as React from "react";
-import cx from "ts-classnames";
+
+import cx from "../utils/cx";
 
 export default function Footer({ className, children }: React.PropsWithChildren<{ className: string }>) {
   return (
@@ -17,19 +18,6 @@ export default function Footer({ className, children }: React.PropsWithChildren<
         "dark:bg-gray-800"
       )}
     >
-      {/* <ul
-        className={cx(
-          "flex",
-          "flex-wrap",
-          "items-center",
-          "mt-3",
-          "text-sm",
-          "text-gray-500",
-          "dark:text-gray-400",
-          "sm:mt-0"
-        )}
-      >
-      </ul> */}
       {children}
     </footer>
   );

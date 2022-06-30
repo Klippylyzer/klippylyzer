@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useParams } from "react-router-dom";
-import cx from "ts-classnames";
 
 import useDb, { Backup as BackupType, BackupFile as BackupFileType } from "../../Context/Database";
 import { humanSize } from "../../utils";
+import cx from "../../utils/cx";
 
 export default function Backup() {
   const { backupId } = useParams<{ backupId: string }>();

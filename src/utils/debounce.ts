@@ -3,7 +3,7 @@ export function debounce<Callback extends (...args: any) => any>(
   callback: Callback,
   delay: number
 ): (...a: Parameters<Callback>) => Promise<ReturnType<Callback>> {
-  let timeout: number;
+  let timeout: ReturnType<typeof setTimeout>;
   let promise: Promise<ReturnType<Callback>>;
   let resolve: undefined | ((v: ReturnType<Callback>) => void);
 

@@ -2,11 +2,11 @@ import produce from "immer";
 import { useCallback, useEffect, useState } from "react";
 import { BsDownload, BsSave } from "react-icons/bs";
 import { NavLink, useNavigate } from "react-router-dom";
-import cx from "ts-classnames";
 
 import Modal from "../../Components/Modal";
 import useDb, { Backup as BackupType } from "../../Context/Database";
 import useMoonraker from "../../Context/Moonraker";
+import cx from "../../utils/cx";
 import { createBackup, zipBackup } from "./utils";
 
 interface BackupState {

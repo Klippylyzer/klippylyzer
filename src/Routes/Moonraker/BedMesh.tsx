@@ -22,10 +22,10 @@ import { SurfaceChart } from "echarts-gl/charts";
 import { Grid3DComponent } from "echarts-gl/components";
 import { useEffect, useMemo, useRef, useState } from "react";
 import colors from "tailwindcss/colors";
-import cx from "ts-classnames";
 
 import useMoonraker from "../../Context/Moonraker";
 import { BedMeshStatus } from "../../types";
+import cx from "../../utils/cx";
 import { useRpcHandler } from "../../utils/jsonrpc";
 
 // TOOD: Reduce

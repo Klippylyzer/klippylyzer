@@ -1,5 +1,6 @@
 import React from "react";
-import cx from "ts-classnames";
+
+import cx from "../utils/cx";
 
 const Base = [
   "focus:ring-4",

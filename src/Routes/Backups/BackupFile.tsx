@@ -4,9 +4,9 @@ import { NavLink, useParams } from "react-router-dom";
 import { PrismLight } from "react-syntax-highlighter";
 import PrismLanguageIni from "react-syntax-highlighter/dist/esm/languages/prism/ini";
 import PrismThemeTomorrow from "react-syntax-highlighter/dist/esm/styles/prism/tomorrow";
-import cx from "ts-classnames";
 
 import useDb, { Backup as BackupType, BackupFile as BackupFileType } from "../../Context/Database";
+import cx from "../../utils/cx";
 
 PrismLight.registerLanguage("ini", PrismLanguageIni);
 

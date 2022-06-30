@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo } from "react";
 import { BsArrowUp, BsDownload, BsLink } from "react-icons/bs";
-import cx from "ts-classnames";
 
 import Button from "../../Components/Buttons";
 import { KlippyLog } from "../../types";
+import cx from "../../utils/cx";
 import KlipperConfigParser, { ConfigFile, Section } from "../../utils/KlipperConfigParser";
 
 type Props = {

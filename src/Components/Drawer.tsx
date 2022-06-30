@@ -1,13 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
+import { useDrag } from "@use-gesture/react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { BsMenuButton } from "react-icons/bs";
 import { TbPlugConnected } from "react-icons/tb";
 import { NavLink, Outlet } from "react-router-dom";
-import cx from "ts-classnames";
 
 import useDb, { Printer } from "../Context/Database";
 import useMoonraker from "../Context/Moonraker";
 import { KlippyLog } from "../types";
+import cx from "../utils/cx";
+import Header from "./Header";
 
 interface Props {
   klippyLog?: KlippyLog;
@@ -16,6 +18,8 @@ interface Props {
 export default function Drawer({ klippyLog, clearLog, children }: React.PropsWithChildren<Props>) {
   const db = useDb();
   const moonraker = useMoonraker();
+
+  const drawerToggle = useRef<HTMLInputElement>(null);
 
   const [printers, setPrinters] = useState<Array<Printer>>([]);
 
@@ -39,6 +43,7 @@ export default function Drawer({ klippyLog, clearLog, children }: React.PropsWit
     },
     [moonraker]
   );
+
   const disconnect = useCallback(() => {
     moonraker?.disconnect();
     clearLog();
@@ -49,22 +54,33 @@ export default function Drawer({ klippyLog, clearLog, children }: React.PropsWit
     db.getAllFromIndex("printers", "by-name").then((printers) => setPrinters(printers as Array<Printer>));
   }, [db]);
 
+  const swipeGesture = useDrag(({ direction: [dx] }) => {
+    if (!drawerToggle.current) return;
+
+    if (dx === 1) {
+      drawerToggle.current.checked = true;
+    } else if (dx === -1) {
+      drawerToggle.current.checked = false;
+    }
+  });
+
   return (
-    <div className={cx("drawer", "drawer-mobile")}>
-      <input type="checkbox" id="drawer-toggle" className={cx("drawer-toggle")} />
+    <div className={cx("drawer", "drawer-mobile")} {...swipeGesture()}>
+      <input type="checkbox" id="drawer-toggle" className={cx("drawer-toggle")} ref={drawerToggle} />
 
       <div className={cx("drawer-content", "lg:mx-2")}>
+        <Header className={cx("lg:hidden")}>
+          <label htmlFor="drawer-toggle" className={cx("btn", "btn-ghost",'btn-xl', "drawer-overlay", "lg:hidden")}>
+            <BsMenuButton />
+          </label>
+        </Header>
         <Outlet />
-
-        <label htmlFor="drawer-toggle" className={cx("btn", "btn-primary", "drawer-overlay", "lg:hidden")}>
-          <BsMenuButton />
-        </label>
       </div>
 
       <div className={cx("drawer-side")}>
         <label htmlFor="drawer-toggle" className={cx("drawer-overlay")}></label>
 
-        <ul className={cx("menu", "p-4", "overflow-y-auto", "w-80", "bg-base-100", "text-base-content")}>
+        <ul className={cx("menu", "p-4", "overflow-y-auto", "w-80", "bg-base-300", "text-base-content")}>
           <li>
             <NavLink to="/" className={cx("flex", "items-center")}>
               <img src={new URL("../img/icon.svg", import.meta.url).toString()} />

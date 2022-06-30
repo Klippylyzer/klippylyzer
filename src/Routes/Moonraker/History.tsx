@@ -2,10 +2,10 @@ import { produce } from "immer";
 import { useEffect, useState } from "react";
 import { BsCheckCircle, BsClock, BsXCircle } from "react-icons/bs";
 import { TbAlertTriangle } from "react-icons/tb";
-import cx from "ts-classnames";
 
 import useMoonraker from "../../Context/Moonraker";
 import { JobStatus, MoonrakerHistoryTotals, MoonrakerJob } from "../../types";
+import cx from "../../utils/cx";
 import { useRpcHandler } from "../../utils/jsonrpc";
 
 function ApproxLength({ length }: { length: number }) {

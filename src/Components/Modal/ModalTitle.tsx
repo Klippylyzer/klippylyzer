@@ -1,4 +1,5 @@
-import cx from "ts-classnames";
+
+import cx from "../../utils/cx";
 
 type Props = React.HTMLAttributes<HTMLDivElement>;
 
