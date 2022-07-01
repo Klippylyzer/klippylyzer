@@ -1,7 +1,7 @@
 import { useDrag } from "@use-gesture/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-import { BsMenuButton } from "react-icons/bs";
+import { BsGithub,BsMenuButton } from "react-icons/bs";
 import { TbPlugConnected } from "react-icons/tb";
 import { NavLink, Outlet } from "react-router-dom";
 
@@ -115,6 +115,12 @@ export default function Drawer({ klippyLog, clearLog, children }: React.PropsWit
               ))}
             </>
           )}
+          <li>
+            <a href="https://github.com/klippylyzer/klippylyzer" target="_blank">
+              <BsGithub />
+              Klippylyzer on Github
+            </a>
+          </li>
         </ul>
       </div>
     </div>

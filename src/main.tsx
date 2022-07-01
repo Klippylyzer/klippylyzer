@@ -20,7 +20,7 @@ reactRoot.render(
         <KlippyLogProvider>
           <AlertProvider>
             <HelmetProvider>
-              <BrowserRouter basename={"/klippylyzer/"}>
+              <BrowserRouter>
                 <App />
               </BrowserRouter>
             </HelmetProvider>

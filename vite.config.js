@@ -1,14 +1,13 @@
+/* eslint-env node */
+
 import react from "@vitejs/plugin-react";
 import { fileURLToPath } from "url";
 import { defineConfig } from "vite";
 
 export default defineConfig({
   root: "src",
-  base: "/klippylyzer/",
 
-  plugins: [
-    react(),
-  ],
+  plugins: [react()],
 
   build: {
     outDir: "../gh-pages",
